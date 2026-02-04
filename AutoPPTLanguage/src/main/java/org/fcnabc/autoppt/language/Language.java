@@ -13,4 +13,3 @@ public enum Language {
         return displayString;
     }
 }
-    

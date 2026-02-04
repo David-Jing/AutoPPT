@@ -7,7 +7,10 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.0.2'
+    testImplementation 'org.junit.platform:junit-platform-launcher:1.10.0'
+    testImplementation 'org.mockito:mockito-core:5.21.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.21.0'
 
     implementation 'com.google.guava:guava:33.5.0-jre'
     implementation 'com.google.inject:guice:7.0.0'
@@ -28,4 +31,8 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(25)
     }
+}
+
+test {
+    useJUnitPlatform()
 }
