@@ -9,20 +9,10 @@ plugins {
     id 'application'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     testImplementation libs.junit
     implementation libs.guava
     implementation project(':AutoPPTSlidesCore')
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
 }
 
 application {

@@ -10,20 +10,10 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     testImplementation libs.junit
     implementation libs.guava
     implementation project(':AutoPPTAppCore')
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
 }
 
 javafx {

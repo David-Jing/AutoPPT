@@ -9,22 +9,12 @@ plugins {
     id 'application'
 }
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     testImplementation libs.junit
     implementation libs.guava
     implementation project(':AutoPPTSlidesIO')
     implementation project(':AutoPPTVerses')
     implementation project(':AutoPPTHymns')
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
-    }
 }
 
 application {

@@ -1,0 +1,16 @@
+allprojects {
+    group = 'org.fcnabc.autoppt'
+    version = '0.1.0'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
+}
