@@ -12,7 +12,6 @@ plugins {
 dependencies {
     testImplementation libs.junit
     implementation libs.guava
-    implementation project(':AutoPPTSlidesCore')
 }
 
 application {

@@ -13,7 +13,6 @@ plugins {
 dependencies {
     testImplementation libs.junit
     implementation libs.guava
-    implementation project(':AutoPPTAppCore')
 }
 
 javafx {
