@@ -18,12 +18,10 @@ public class VerseModule extends AbstractModule {
         if (esvApiKey == null || esvApiKey.isBlank()) {
             throw new IllegalStateException("CRITICAL: ESV_API_KEY environment variable is missing.");
         }
-
         bindConstant().annotatedWith(Names.named("ESV_API_KEY")).to(esvApiKey);
         
         @SuppressWarnings("null")
         MapBinder<Language, VerseProvider> providerBinder = MapBinder.newMapBinder(binder(), Language.class, VerseProvider.class);
-        
         providerBinder.addBinding(Language.ENGLISH).to(EnglishVerseProvider.class);
     }
 

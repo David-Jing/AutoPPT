@@ -6,3 +6,7 @@ build
 
 # Ignore Kotlin plugin data
 .kotlin
+
+# Ignore Google credentials and tokens
+credentials.json
+tokens/
