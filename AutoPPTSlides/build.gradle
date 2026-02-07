@@ -12,11 +12,11 @@ plugins {
 dependencies {
     testImplementation libs.junit
     implementation libs.guava
-    implementation project(':AutoPPTSlidesIO')
+    implementation project(':AutoPPTGoogle')
     implementation project(':AutoPPTVerses')
     implementation project(':AutoPPTHymns')
 }
 
 application {
-    mainClass = 'org.fcnabc.autoppt.slides.core.Main'
+    mainClass = 'org.fcnabc.autoppt.slides.Main'
 }

@@ -1,4 +1,7 @@
-package org.fcnabc.autoppt.slides.io;
+package org.fcnabc.autoppt.google;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -7,10 +10,8 @@ import com.google.inject.name.Names;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 
-public class SlidesIOModule extends AbstractModule {
+public class GoogleModule extends AbstractModule {
     
     @Override 
     protected void configure() {

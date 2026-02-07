@@ -14,8 +14,8 @@ rootProject.name = 'AutoPPT'
 include(
     'AutoPPTAppCore',
     'AutoPPTAppUI',
-    'AutoPPTSlidesCore',
-    'AutoPPTSlidesIO',
+    'AutoPPTSlides',
+    'AutoPPTGoogle',
     'AutoPPTVerses',
     'AutoPPTHymns',
     'AutoPPTLanguage',

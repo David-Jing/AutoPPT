@@ -1,4 +1,4 @@
-package org.fcnabc.autoppt.slides.core;
+package org.fcnabc.autoppt.slides;
 
 public class Main {
     public String getGreeting() {

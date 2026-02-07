@@ -1,4 +1,4 @@
-package org.fcnabc.autoppt.slides.io;
+package org.fcnabc.autoppt.google;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.drive.Drive;
