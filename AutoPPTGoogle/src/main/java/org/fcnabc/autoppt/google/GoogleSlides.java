@@ -11,31 +11,36 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.slides.v1.Slides;
 import com.google.api.services.slides.v1.model.BatchUpdatePresentationRequest;
 import com.google.api.services.slides.v1.model.DeleteTextRequest;
+import com.google.api.services.slides.v1.model.Dimension;
 import com.google.api.services.slides.v1.model.DuplicateObjectRequest;
 import com.google.api.services.slides.v1.model.InsertTextRequest;
+import com.google.api.services.slides.v1.model.OpaqueColor;
+import com.google.api.services.slides.v1.model.OptionalColor;
 import com.google.api.services.slides.v1.model.Page;
 import com.google.api.services.slides.v1.model.PageElement;
+import com.google.api.services.slides.v1.model.ParagraphStyle;
 import com.google.api.services.slides.v1.model.Presentation;
 import com.google.api.services.slides.v1.model.Range;
+import com.google.api.services.slides.v1.model.Request;
+import com.google.api.services.slides.v1.model.RgbColor;
 import com.google.api.services.slides.v1.model.Table;
 import com.google.api.services.slides.v1.model.TableCell;
 import com.google.api.services.slides.v1.model.TableCellLocation;
 import com.google.api.services.slides.v1.model.TableRow;
-import com.google.api.services.slides.v1.model.Request;
-import com.google.api.services.slides.v1.model.Dimension;
 import com.google.api.services.slides.v1.model.TextStyle;
-import com.google.api.services.slides.v1.model.OptionalColor;
-import com.google.api.services.slides.v1.model.OpaqueColor;
-import com.google.api.services.slides.v1.model.RgbColor;
-import com.google.api.services.slides.v1.model.UpdateTextStyleRequest;
 import com.google.api.services.slides.v1.model.UpdateParagraphStyleRequest;
-import com.google.api.services.slides.v1.model.ParagraphStyle;
+import com.google.api.services.slides.v1.model.UpdateTextStyleRequest;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import org.fcnabc.autoppt.google.models.ParagraphAlignment;
 import org.fcnabc.autoppt.google.models.SlideObject;
 
+/**
+ * A wrapper around the Google Slides API that provides higher-level methods for common operations on slides, 
+ * such as duplication, deletion, and text updates.
+ * To optimize performance, this class batches multiple operations together and executes them in a single API call.
+ */
 public class GoogleSlides {
     private static final String DUPLICATE_SUFFIX = "_d%d";
     private static final String FONT_DIMENSION_UNIT = "PT";
