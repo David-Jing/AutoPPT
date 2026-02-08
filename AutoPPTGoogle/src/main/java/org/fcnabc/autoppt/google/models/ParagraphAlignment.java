@@ -6,13 +6,13 @@ public enum ParagraphAlignment {
     CENTER("CENTER"),
     JUSTIFIED("JUSTIFIED");
 
-    private final String displayString;
+    private final String alignment;
 
-    ParagraphAlignment(String displayString) {
-        this.displayString = displayString;
+    ParagraphAlignment(String alignment) {
+        this.alignment = alignment;
     }
 
-    public String getDisplayString() {
-        return displayString;
+    public String getAlignment() {
+        return alignment;
     }
 }

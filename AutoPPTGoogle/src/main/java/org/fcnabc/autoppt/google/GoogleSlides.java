@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.services.slides.v1.Slides;
@@ -41,6 +42,7 @@ import org.fcnabc.autoppt.google.models.SlideObject;
  * such as duplication, deletion, and text updates.
  * To optimize performance, this class batches multiple operations together and executes them in a single API call.
  */
+@Slf4j
 public class GoogleSlides {
     private static final String DUPLICATE_SUFFIX = "_d%d";
     private static final String FONT_DIMENSION_UNIT = "PT";
@@ -55,6 +57,7 @@ public class GoogleSlides {
 
     @Inject
     public GoogleSlides(Credential credential, @Named("googleAppName") String applicationName) {
+        log.info("Initializing Google Slides service...");
         this.credential = credential;
         this.service = new Slides.Builder(
                 this.credential.getTransport(),
@@ -87,6 +90,7 @@ public class GoogleSlides {
      * Retrieve only the necessary fields (presentationId and slides) to minimize API response size and improve performance.
      */
     public void setPresentationContext(String presentationId) throws IOException {
+        log.info("Setting presentation context for presentation ID: {}", presentationId);
         this.requests.clear();
         this.presentation = service.presentations().get(presentationId)
                     .setFields(PRESENTATION_CONTEXT)
@@ -94,6 +98,7 @@ public class GoogleSlides {
     }
 
     public void executeUpdates() throws IOException {
+        log.info("Executing batch update with {} requests on presentation ID: {}", requests.size(), presentation.getPresentationId());
         validatePresentationContext();
 
         if (requests.isEmpty()) return;
@@ -320,7 +325,7 @@ public class GoogleSlides {
     public void setParagraphStyle(SlideObject slideObject, float lineSpacing, ParagraphAlignment alignment) {
         ParagraphStyle paragraphStyle = new ParagraphStyle();
         paragraphStyle.setLineSpacing(lineSpacing);
-        paragraphStyle.setAlignment(alignment.getDisplayString());
+        paragraphStyle.setAlignment(alignment.getAlignment());
 
         UpdateParagraphStyleRequest paragraphStyleRequest = new UpdateParagraphStyleRequest()
                 .setObjectId(slideObject.id())

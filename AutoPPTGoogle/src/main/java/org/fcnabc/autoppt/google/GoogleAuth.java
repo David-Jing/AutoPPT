@@ -1,5 +1,6 @@
 package org.fcnabc.autoppt.google;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,10 +25,11 @@ import com.google.inject.Singleton;
 public class GoogleAuth {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    /**
-     * Global instance of the scopes required by this quickstart.
-     * If modifying these scopes, delete your previously saved tokens/ folder.
-     */
+
+    /*
+    Global instance of the scopes required by this quickstart.
+    If modifying these scopes, delete your previously saved tokens/ folder.
+    */
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
     private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
 
@@ -40,8 +42,6 @@ public class GoogleAuth {
 
     /**
      * Creates an authorized Credential object.
-     * @return An authorized Credential object.
-     * @throws IOException If the credentials.json file cannot be found.
      */
     public Credential getCredentials() throws IOException {
         // Load client secrets.
@@ -54,12 +54,14 @@ public class GoogleAuth {
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 httpTransport, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new java.io.File(TOKENS_DIRECTORY_PATH)))
+                .setDataStoreFactory(new FileDataStoreFactory(new File(TOKENS_DIRECTORY_PATH)))
                 .setAccessType("offline")
                 .build();
         
-        // LocalServerReceiver will automatically open the browser, listen for the 
-        // redirect on a local port, and capture the token.
+        /*
+        LocalServerReceiver will automatically open the browser, listen for the 
+        redirect on a local port, and capture the token.
+        */
         LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
         return new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
     }

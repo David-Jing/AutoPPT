@@ -14,5 +14,29 @@ subprojects {
                 languageVersion = JavaLanguageVersion.of(25)
             }
         }
+
+        test {
+            useJUnitPlatform()
+            // Configure JVM arguments to suppress Guice warnings on modern Java
+            jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+            
+            testLogging {
+                events = ["standardOut", "standardError"]
+                exceptionFormat = "full"
+            }
+        }
+
+        sourceSets {
+            main {
+                resources {
+                    srcDir "${rootProject.projectDir}/config/main-resources"
+                }
+            }
+            test {
+                resources {
+                    srcDir "${rootProject.projectDir}/config/test-resources"
+                }
+            }
+        }
     }
 }
