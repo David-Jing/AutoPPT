@@ -44,7 +44,7 @@ import org.fcnabc.autoppt.google.models.SlideObject;
  */
 @Slf4j
 public class GoogleSlides {
-    private static final String DUPLICATE_SUFFIX = "_d%d";
+    private static final String DUPLICATE_SUFFIX = "_dup_%d";
     private static final String FONT_DIMENSION_UNIT = "PT";
     private static final String PRESENTATION_CONTEXT = "presentationId,slides";
 
@@ -164,7 +164,7 @@ public class GoogleSlides {
     }
 
     /**
-     * Extracts text content from textbox and table elements in the specified slide 
+     * Extracts non-empty text content from textbox and table elements in the specified slide 
      * and returns a mapping from element IDs to their text content.
      * 
      * PageElement can only assume one type at a time
@@ -184,7 +184,10 @@ public class GoogleSlides {
                         .filter(te -> te.getTextRun() != null)
                         .map(te -> te.getTextRun().getContent())
                         .reduce("", String::concat);
-                textElements.put(new SlideObject(objectId), textContent);
+
+                if (!textContent.isEmpty()) {
+                    textElements.put(new SlideObject(objectId), textContent);
+                }
             } else if (element.getTable() != null) {
                 Table table = element.getTable();
                 for (int r = 0; r < table.getTableRows().size(); r++) {
@@ -196,7 +199,10 @@ public class GoogleSlides {
                                     .filter(te -> te.getTextRun() != null)
                                     .map(te -> te.getTextRun().getContent())
                                     .reduce("", String::concat);
-                            textElements.put(new SlideObject(objectId, r, c), textContent);
+                                    
+                            if (!textContent.isEmpty()) {
+                                textElements.put(new SlideObject(objectId, r, c), textContent);
+                            }
                         }
                     }
                 }

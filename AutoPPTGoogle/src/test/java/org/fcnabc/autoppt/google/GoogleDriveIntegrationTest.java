@@ -10,7 +10,6 @@ import org.fcnabc.autoppt.google.models.DriveMimeType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -27,6 +26,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GoogleDriveIntegrationTest {
+    // Disable/enable this integration tests
+    private static final Boolean TESTS_ENABLED = false;
+
     private static String uploadedFileId;
     private static String duplicatedFileId;
 
@@ -34,6 +36,8 @@ public class GoogleDriveIntegrationTest {
 
     @BeforeAll
     public static void setup() throws IOException {
+        Assumptions.assumeTrue(TESTS_ENABLED, "Google Drive Integration Tests are disabled. Set TESTS_ENABLED to true to enable them.");
+
         log.info("Setting up Google Drive Integration Test...");
         
         try {
@@ -49,12 +53,13 @@ public class GoogleDriveIntegrationTest {
     @Order(1)
     public void testUploadFile(@TempDir Path tempDir) throws IOException {
         String fileName = "autoppt_integration_test_" + System.currentTimeMillis() + ".txt";
+        // Explicit content
+        String content = "Initial Content";
         Path tempFile = tempDir.resolve(fileName);
-        Files.writeString(tempFile, "This is a test content for Google Drive integration.\nCreated at: " + System.currentTimeMillis());
-        File fileToUpload = tempFile.toFile();
-
+        Files.writeString(tempFile, content);
+        
         log.info("Uploading file: {}", fileName);
-        uploadedFileId = googleDrive.uploadFile(fileName, DriveMimeType.PLAIN_TEXT, fileToUpload);
+        uploadedFileId = googleDrive.uploadFile(fileName, DriveMimeType.PLAIN_TEXT, tempFile.toFile());
         
         assertNotNull(uploadedFileId, "Uploaded file ID should not be null");
         log.info("Uploaded File ID: {}", uploadedFileId);
@@ -67,11 +72,50 @@ public class GoogleDriveIntegrationTest {
         
         DateTime modifiedTime = googleDrive.getFileLastModifiedTime(uploadedFileId);
         assertNotNull(modifiedTime, "Modified time should be retrieved");
+        
+        // Validation: Mod time should be recent (within 1 minute)
+        long now = System.currentTimeMillis();
+        long diff = Math.abs(now - modifiedTime.getValue());
+        assertTrue(diff < 60000, "File modification time should be within last 1 minutes");
+
         log.info("File Modified Time: {}", modifiedTime);
     }
 
     @Test
     @Order(3)
+    public void testUpdateFileContent(@TempDir Path tempDir) throws IOException, InterruptedException {
+        Assumptions.assumeTrue(uploadedFileId != null, "Skipping because upload failed");
+
+        DateTime oldModifiedTime = googleDrive.getFileLastModifiedTime(uploadedFileId);
+        log.info("Old Modified Time: {}", oldModifiedTime);
+
+        // Ensure time triggers a change
+        Thread.sleep(2000);
+
+        String newContent = "Updated Content " + System.currentTimeMillis();
+        Path tempFile = tempDir.resolve("updated.txt");
+        Files.writeString(tempFile, newContent);
+
+        log.info("Updating file content...");
+        googleDrive.replaceFileContent(uploadedFileId, DriveMimeType.PLAIN_TEXT, tempFile.toFile());
+
+        // Validate Modification Time
+        DateTime newModifiedTime = googleDrive.getFileLastModifiedTime(uploadedFileId);
+        log.info("New Modified Time: {}", newModifiedTime);
+        assertTrue(newModifiedTime.getValue() > oldModifiedTime.getValue(), 
+            "Modified time should have increased after update");
+
+        // Validate File Contents
+        Path downloadDir = tempDir.resolve("verify");
+        Files.createDirectories(downloadDir);
+        Path downloaded = googleDrive.downloadFile(uploadedFileId, downloadDir);
+        String downloadedContent = Files.readString(downloaded);
+        
+        assertEquals(newContent, downloadedContent, "Downloaded content should match the updated content");
+    }
+
+    @Test
+    @Order(4)
     public void testDuplicateFile() throws IOException {
         Assumptions.assumeTrue(uploadedFileId != null, "Skipping because upload failed");
 
@@ -83,7 +127,7 @@ public class GoogleDriveIntegrationTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void testDownloadFile(@TempDir Path tempDir) throws IOException {
         Assumptions.assumeTrue(uploadedFileId != null, "Skipping because upload failed");
 
@@ -96,7 +140,7 @@ public class GoogleDriveIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void testCleanup() {
         if (uploadedFileId != null) {
             try {

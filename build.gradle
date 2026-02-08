@@ -17,7 +17,6 @@ subprojects {
 
         test {
             useJUnitPlatform()
-            // Configure JVM arguments to suppress Guice warnings on modern Java
             jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
             
             testLogging {
