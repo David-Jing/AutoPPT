@@ -8,6 +8,7 @@ dependencies {
     implementation 'com.google.inject:guice:7.0.0'
     implementation 'org.slf4j:slf4j-api:2.0.17'
     implementation 'ch.qos.logback:logback-classic:1.5.27'
+    implementation project(':AutoPPTIO')
 
     // Google API dependencies
     implementation 'com.google.apis:google-api-services-slides:v1-rev20250401-2.0.0'

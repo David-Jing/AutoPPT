@@ -4,6 +4,13 @@ public record BibleVerse(
     BibleVerseCoordinates coordinates,
     String text
 ) {
+    public BibleVerse(BibleVerseCoordinates coordinates, String text) {
+        this.coordinates = coordinates;
+        this.text = text.replace("\n", "")
+                        .replaceAll("\\s+", " ")
+                        .trim();
+    }
+
     public String getDisplayString() {
         return "%s %s".formatted(
             coordinates.getDisplayString(),

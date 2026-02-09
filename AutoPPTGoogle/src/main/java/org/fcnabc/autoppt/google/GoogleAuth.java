@@ -1,10 +1,10 @@
 package org.fcnabc.autoppt.google;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,24 +20,30 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.DriveScopes;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 
+/**
+ * Handles Google OAuth2 authentication and credential management.
+ * If modifying scopes, delete previously saved tokens.
+ */
 @Singleton
 public class GoogleAuth {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
-    private static final String TOKENS_DIRECTORY_PATH = "tokens";
-
-    /*
-    Global instance of the scopes required by this quickstart.
-    If modifying these scopes, delete your previously saved tokens/ folder.
-    */
     private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
-    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-
+    
     private final NetHttpTransport httpTransport;
+    private final String googleCredentials;
+    private final Path googleTokenDirectory;
 
     @Inject
-    public GoogleAuth(NetHttpTransport httpTransport) {
+    public GoogleAuth(
+        NetHttpTransport httpTransport,
+        @Named("GOOGLE_CREDENTIALS") String googleCredentials,
+        @Named("GOOGLE_TOKEN_DIRECTORY") Path googleTokenDirectory
+    ) {
+        this.googleCredentials = googleCredentials;
         this.httpTransport = httpTransport;
+        this.googleTokenDirectory = googleTokenDirectory;
     }
 
     /**
@@ -45,16 +51,13 @@ public class GoogleAuth {
      */
     public Credential getCredentials() throws IOException {
         // Load client secrets.
-        InputStream in = GoogleAuth.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        if (in == null) {
-            throw new FileNotFoundException("Resource not found: " + CREDENTIALS_FILE_PATH);
-        }
+        InputStream in = new ByteArrayInputStream(googleCredentials.getBytes());
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
         // Build flow and trigger user authorization request.
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 httpTransport, JSON_FACTORY, clientSecrets, SCOPES)
-                .setDataStoreFactory(new FileDataStoreFactory(new File(TOKENS_DIRECTORY_PATH)))
+                .setDataStoreFactory(new FileDataStoreFactory(googleTokenDirectory.toFile()))
                 .setAccessType("offline")
                 .build();
         

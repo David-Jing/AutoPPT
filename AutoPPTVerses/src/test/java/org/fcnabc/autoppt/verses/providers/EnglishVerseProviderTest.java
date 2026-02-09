@@ -41,7 +41,7 @@ class EnglishVerseProviderTest {
 
     @Test
     void testGetVerse_Success() throws Exception {
-        String jsonResponse = "{\"passage\": \"[16] For God so loved the world...\"}";
+        String jsonResponse = "{\"passages\": [\"[16] For God so loved the world...\"]}";
         
         when(mockResponse.statusCode()).thenReturn(200);
         when(mockResponse.body()).thenReturn(jsonResponse);

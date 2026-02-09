@@ -1,33 +1,35 @@
 package org.fcnabc.autoppt.google;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import lombok.extern.slf4j.Slf4j;
-import org.fcnabc.autoppt.google.models.ParagraphAlignment;
-import org.fcnabc.autoppt.google.models.SlideObject;
-import org.junit.jupiter.api.*;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
+import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.fcnabc.autoppt.io.IOModule;
+import org.fcnabc.autoppt.google.models.ParagraphAlignment;
+import org.fcnabc.autoppt.google.models.SlideObject;
 
 /**
  * Integration test for GoogleSlides wrapper.
  * This test runs against the real Google Slides API and requires:
- * 1. src/main/resources/credentials.json to be present.
+ * 1. google-credentials.json to be present.
  * 2. An active internet connection.
  * 3. User intervention to authorize the app in the browser (first run only).
  */
 @Slf4j
+@Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GoogleSlidesIntegrationTest {
     // Set to false to keep test files for manual inspection
-    private static final Boolean CLEANUP_AFTER_TESTS = false;
+    private static final Boolean CLEANUP_AFTER_TESTS = true;
 
     // Disable/enable this integration tests
-    private static final Boolean TESTS_ENABLED = false;
+    private static final Boolean TESTS_ENABLED = true;
 
     /*
     Test using the following template which contains 1 slide with:
@@ -47,11 +49,11 @@ public class GoogleSlidesIntegrationTest {
         
         log.info("Setting up Google Slides Integration Test...");
         try {
-            Injector injector = Guice.createInjector(new GoogleModule());
+            Injector injector = Guice.createInjector(new GoogleModule(), new IOModule());
             googleDrive = injector.getInstance(GoogleDrive.class);
             googleSlides = injector.getInstance(GoogleSlides.class);
         } catch (Exception e) {
-            log.error("Failed to initialize Google Services. Ensure credentials.json is present.", e);
+            log.error("Failed to initialize Google Services. Ensure google-credentials.json is present.", e);
             throw new RuntimeException(e);
         }
     }

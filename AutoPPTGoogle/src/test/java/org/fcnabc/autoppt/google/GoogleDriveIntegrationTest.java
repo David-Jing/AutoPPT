@@ -1,33 +1,34 @@
 package org.fcnabc.autoppt.google;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import lombok.extern.slf4j.Slf4j;
 import com.google.api.client.util.DateTime;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.fcnabc.autoppt.google.models.DriveMimeType;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.fcnabc.autoppt.io.IOModule;
+import org.fcnabc.autoppt.google.models.DriveMimeType;
 
 /**
  * Integration test for GoogleDrive wrapper.
  * This test runs against the real Google Drive API and requires:
- * 1. src/main/resources/credentials.json to be present.
+ * 1. google-credentials.json to be present.
  * 2. An active internet connection.
  * 3. User intervention to authorize the app in the browser (first run only).
  */
 @Slf4j
+@Tag("integration")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GoogleDriveIntegrationTest {
     // Disable/enable this integration tests
-    private static final Boolean TESTS_ENABLED = false;
+    private static final Boolean TESTS_ENABLED = true;
 
     private static String uploadedFileId;
     private static String duplicatedFileId;
@@ -41,10 +42,10 @@ public class GoogleDriveIntegrationTest {
         log.info("Setting up Google Drive Integration Test...");
         
         try {
-            Injector injector = Guice.createInjector(new GoogleModule());
+            Injector injector = Guice.createInjector(new GoogleModule(), new IOModule());
             googleDrive = injector.getInstance(GoogleDrive.class);
         } catch (Exception e) {
-            log.error("Failed to initialize Google Auth. Ensure credentials.json is present.", e);
+            log.error("Failed to initialize Google Auth. Ensure google-credentials.json is present.", e);
             throw new RuntimeException(e);
         }
     }

@@ -1,15 +1,20 @@
 package org.fcnabc.autoppt.google;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Names;
+import com.google.inject.name.Named;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
+
+import org.fcnabc.autoppt.io.GetKeys;
+import org.fcnabc.autoppt.io.model.Key;
 
 public class GoogleModule extends AbstractModule {
     
@@ -28,5 +33,19 @@ public class GoogleModule extends AbstractModule {
     @Singleton
     Credential provideCredential(GoogleAuth googleAuth) throws IOException {
         return googleAuth.getCredentials();
+    }
+
+    @Provides
+    @Named("GOOGLE_CREDENTIALS")
+    @Singleton
+    String provideGoogleCredentials(GetKeys getKeys) {
+        return getKeys.getKey(Key.GOOGLE_CREDENTIALS);
+    }
+
+    @Provides
+    @Singleton
+    @Named("GOOGLE_TOKEN_DIRECTORY")
+    Path provideTokenDirectory(GetKeys getKeys) {
+        return getKeys.getKeyDirectory();
     }
 }

@@ -50,7 +50,8 @@ public class EnglishVerseProvider implements VerseProvider {
         log.info("Fetching English verse for coordinates: {}", cord.getDisplayString());
         String query = cord.getDisplayString();
         JSONObject response = getESVQueryResponse(query);
-        return parseRawBibleVerseString(cord.book(), cord.chapter(), response.getString("passage"));
+        String passageText = response.getJSONArray("passages").getString(0);
+        return parseRawBibleVerseString(cord.book(), cord.chapter(), passageText);
     }
 
     @Override
@@ -70,7 +71,8 @@ public class EnglishVerseProvider implements VerseProvider {
             log.info("Querying ESV API with: {}", query);
 
             JSONObject response = getESVQueryResponse(query);
-            List<BibleVerse> chapterVerses = parseRawBibleVerseString(startCord.book(), chapter, response.getString("passage"));
+            String passageText = response.getJSONArray("passages").getString(0);
+            List<BibleVerse> chapterVerses = parseRawBibleVerseString(startCord.book(), chapter, passageText);
 
             for (BibleVerse verse : chapterVerses) {
                 if (!isVerseOutOfBounds(verse, chapter, startCord, endCord)) {
