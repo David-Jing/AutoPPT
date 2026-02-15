@@ -10,6 +10,7 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:2.0.17'
     implementation 'ch.qos.logback:logback-classic:1.5.27'
     implementation project(':AutoPPTGoogle')
+    implementation project(':AutoPPTIO')
 
     // Google API dependencies
     implementation 'com.google.api-client:google-api-client:2.8.1'

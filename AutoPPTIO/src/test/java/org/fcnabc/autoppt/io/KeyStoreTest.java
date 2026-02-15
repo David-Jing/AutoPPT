@@ -11,16 +11,16 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class GetKeysTest {
+class KeyStoreTest {
 
     @TempDir
-    Path tempDir; // Ensure existing keys are not affected during testing
+    Path tempDir;
 
-    private GetKeys getKeys;
+    private KeyStore getKeys;
 
     @BeforeEach
     void setUp() {
-        getKeys = new GetKeys(tempDir);
+        getKeys = new KeyStore(tempDir);
     }
 
     @Test

@@ -13,7 +13,7 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
-import org.fcnabc.autoppt.io.GetKeys;
+import org.fcnabc.autoppt.io.KeyStore;
 import org.fcnabc.autoppt.io.model.Key;
 
 public class GoogleModule extends AbstractModule {
@@ -38,14 +38,14 @@ public class GoogleModule extends AbstractModule {
     @Provides
     @Named("GOOGLE_CREDENTIALS")
     @Singleton
-    String provideGoogleCredentials(GetKeys getKeys) {
+    String provideGoogleCredentials(KeyStore getKeys) {
         return getKeys.getKey(Key.GOOGLE_CREDENTIALS);
     }
 
     @Provides
     @Singleton
     @Named("GOOGLE_TOKEN_DIRECTORY")
-    Path provideTokenDirectory(GetKeys getKeys) {
+    Path provideTokenDirectory(KeyStore getKeys) {
         return getKeys.getKeyDirectory();
     }
 }

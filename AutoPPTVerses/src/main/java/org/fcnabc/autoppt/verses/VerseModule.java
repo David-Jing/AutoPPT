@@ -7,7 +7,7 @@ import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Named;
 import java.net.http.HttpClient;
 
-import org.fcnabc.autoppt.io.GetKeys;
+import org.fcnabc.autoppt.io.KeyStore;
 import org.fcnabc.autoppt.io.model.Key;
 import org.fcnabc.autoppt.language.Language;
 import org.fcnabc.autoppt.verses.providers.EnglishVerseProvider;
@@ -24,7 +24,7 @@ public class VerseModule extends AbstractModule {
     @Provides
     @Named("ESV_API_KEY")
     @Singleton
-    String provideEsvApiKey(GetKeys getKeys) {
+    String provideEsvApiKey(KeyStore getKeys) {
         return getKeys.getKey(Key.ESV_API_KEY);
     }
 

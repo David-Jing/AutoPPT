@@ -98,7 +98,7 @@ public class GoogleDriveIntegrationTest {
         Files.writeString(tempFile, newContent);
 
         log.info("Updating file content...");
-        googleDrive.replaceFileContent(uploadedFileId, DriveMimeType.PLAIN_TEXT, tempFile.toFile());
+        googleDrive.updateFile(uploadedFileId, DriveMimeType.PLAIN_TEXT, tempFile.toFile());
 
         // Validate Modification Time
         DateTime newModifiedTime = googleDrive.getFileLastModifiedTime(uploadedFileId);
@@ -117,6 +117,34 @@ public class GoogleDriveIntegrationTest {
 
     @Test
     @Order(4)
+    public void testFileExists() {
+        Assumptions.assumeTrue(uploadedFileId != null, "Skipping because upload failed");
+
+        // Check positive case
+        boolean exists = googleDrive.fileExists(uploadedFileId);
+        assertTrue(exists, "Uploaded file should exist");
+
+        // Check negative case
+        boolean notExists = googleDrive.fileExists("invalid-file-id-should-not-exist-" + System.currentTimeMillis());
+        assertFalse(notExists, "Non-existent file ID should return false");
+        
+        log.info("File existence check passed for ID: {}", uploadedFileId);
+    }
+
+    @Test
+    @Order(5)
+    public void testDownloadFileToString() throws IOException {
+        Assumptions.assumeTrue(uploadedFileId != null, "Skipping because upload failed");
+
+        log.info("Downloading file to string: {}", uploadedFileId);
+        String content = googleDrive.downloadFile(uploadedFileId);
+        assertNotNull(content, "Downloaded content should not be null");
+        assertTrue(content.contains("Updated Content"), "Downloaded content should contain the updated text");
+        log.info("Downloaded content length: {}", content.length());
+    }
+
+    @Test
+    @Order(6)
     public void testDuplicateFile() throws IOException {
         Assumptions.assumeTrue(uploadedFileId != null, "Skipping because upload failed");
 
@@ -128,7 +156,7 @@ public class GoogleDriveIntegrationTest {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     public void testDownloadFile(@TempDir Path tempDir) throws IOException {
         Assumptions.assumeTrue(uploadedFileId != null, "Skipping because upload failed");
 
@@ -141,7 +169,7 @@ public class GoogleDriveIntegrationTest {
     }
 
     @Test
-    @Order(6)
+    @Order(8)
     public void testCleanup() {
         if (uploadedFileId != null) {
             try {

@@ -11,11 +11,11 @@ import com.google.inject.name.Named;
 import org.fcnabc.autoppt.io.model.Key;
 
 @Singleton
-public class GetKeys {
+public class KeyStore {
     private final Path KEY_DIRECTORY;
 
     @Inject
-    public GetKeys(@Named("KeyDirectory") Path keyDirectory) {
+    public KeyStore(@Named("KeyDirectory") Path keyDirectory) throws RuntimeException {
         this.KEY_DIRECTORY = keyDirectory;
         if (!KEY_DIRECTORY.toFile().exists() && !KEY_DIRECTORY.toFile().mkdirs()) {
             throw new RuntimeException("Failed to create directory for keys: " + KEY_DIRECTORY);

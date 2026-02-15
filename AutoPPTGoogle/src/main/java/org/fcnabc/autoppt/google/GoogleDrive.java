@@ -63,8 +63,8 @@ public class GoogleDrive {
         return file.getId();
     }
 
-    public void replaceFileContent(String fileId, DriveMimeType mimeType, java.io.File newContent) throws IOException {
-        log.info("Replacing content of file with ID: {}", fileId);
+    public void updateFile(String fileId, DriveMimeType mimeType, java.io.File newContent) throws IOException {
+        log.info("Updating content of file with ID: {}", fileId);
         File fileMetadata = new File();
         fileMetadata.setMimeType(mimeType.getMimeType());
 
@@ -76,6 +76,31 @@ public class GoogleDrive {
         log.info("Retrieving last modified time for file with ID: {}", fileId);
         File file = service.files().get(fileId).setFields("modifiedTime").execute();
         return file.getModifiedTime();
+    }
+
+    public boolean fileExists(String fileId) {
+        log.info("Checking existence of file with ID: {}", fileId);
+        try {
+            service.files().get(fileId).setFields("id").execute();
+            return true;
+        } catch (IOException e) {
+            log.warn("File with ID: {} does not exist.", fileId);
+            return false;
+        }
+    }
+
+    public String downloadFile(String fileId) throws IOException {
+        log.info("Downloading file with ID to string memory: {}", fileId);
+        Path tempFileDir = Path.of(System.getProperty("java.io.tmpdir"));
+        Path tempFilePath = downloadFile(fileId, tempFileDir);
+
+        String content = java.nio.file.Files.readString(tempFilePath);
+        try {
+            java.nio.file.Files.delete(tempFilePath);
+        } catch (IOException e) {
+            log.warn("Failed to delete temporary file: {}", tempFilePath, e);
+        }
+        return content.trim();
     }
 
     public Path downloadFile(String fileId, Path directory) throws IOException {
