@@ -22,6 +22,9 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+
+import org.fcnabc.autoppt.io.model.AppConfig;
+
 /**
  * Handles Google OAuth2 authentication and credential management.
  * If modifying scopes, delete previously saved tokens.
@@ -38,12 +41,12 @@ public class GoogleAuth {
     @Inject
     public GoogleAuth(
         NetHttpTransport httpTransport,
-        @Named("GOOGLE_CREDENTIALS") String googleCredentials,
-        @Named("GOOGLE_TOKEN_DIRECTORY") Path googleTokenDirectory
+        AppConfig appConfig,
+        @Named("AppDirectory") Path appDirectory
     ) {
-        this.googleCredentials = googleCredentials;
+        this.googleCredentials = appConfig.GoogleCredentialKey();
         this.httpTransport = httpTransport;
-        this.googleTokenDirectory = googleTokenDirectory;
+        this.googleTokenDirectory = appDirectory;
     }
 
     /**

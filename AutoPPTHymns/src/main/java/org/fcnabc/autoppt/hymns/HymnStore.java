@@ -3,6 +3,7 @@ package org.fcnabc.autoppt.hymns;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 import java.nio.file.Path;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -18,7 +19,8 @@ import com.google.inject.name.Named;
 
 import org.fcnabc.autoppt.google.GoogleDrive;
 import org.fcnabc.autoppt.google.models.DriveMimeType;
-import org.fcnabc.autoppt.io.CacheStore;
+import org.fcnabc.autoppt.io.FileStore;
+import org.fcnabc.autoppt.hymns.models.Hymn;
 import org.fcnabc.autoppt.hymns.models.HymnMetadata;
 
 @Slf4j
@@ -26,14 +28,14 @@ import org.fcnabc.autoppt.hymns.models.HymnMetadata;
 public class HymnStore {
     private static final String HYMN_CACHE_TIMESTAMPS_FILE = "hymnCacheTimestamps.json";
 
-    private CacheStore cacheStore;
+    private FileStore cacheStore;
     private GoogleDrive googleDrive;
     private String hymnTimestampFileID;
     private Map<String, HymnMetadata> hymnCacheTimestampsCloud;
     private Map<String, HymnMetadata> hymnCacheTimestampsLocal;
 
     @Inject
-    public HymnStore(CacheStore cacheStore, GoogleDrive googleDrive, @Named("HYMN_TIMESTAMP_FILE_ID") String hymnTimestampFileID) throws IOException {
+    public HymnStore(FileStore cacheStore, GoogleDrive googleDrive, @Named("HYMN_TIMESTAMP_FILE_ID") String hymnTimestampFileID) throws IOException {
         this.cacheStore = cacheStore;
         this.googleDrive = googleDrive;
         this.hymnTimestampFileID = hymnTimestampFileID;
@@ -46,12 +48,13 @@ public class HymnStore {
         return hymnCacheTimestampsLocal.keySet();
     }
 
-    public String getHymn(String hymnName) throws IOException {
+    public Hymn getHymn(String hymnName) throws IOException {
         HymnMetadata cache = hymnCacheTimestampsLocal.get(hymnName);
         if (cache == null) {
             throw new IOException("Hymn not found in local cache: " + hymnName);
         }
-        return cacheStore.getCache(cache.fileName());
+        String content = cacheStore.getFileContent(cache.fileName());
+        return new Hymn(cache, List.of(content.split("\n\n")));
     }
 
     public void setHymn(String hymnName, DateTime timestamp, String content) throws IOException {
@@ -74,17 +77,17 @@ public class HymnStore {
         // Update local timestamp and cache file
         HymnMetadata newMetadata = new HymnMetadata(currMetadata.hymnName(), currMetadata.lastUpdated(), currMetadata.fileName(), currMetadata.fileId());
         hymnCacheTimestampsLocal.put(currMetadata.hymnName(), newMetadata);
-        cacheStore.setCache(currMetadata.fileName(), content);
+        cacheStore.setFile(currMetadata.fileName(), content);
 
         // Update Google Drive timestamp and content file
         try {
-            googleDrive.updateFile(currMetadata.fileId(), DriveMimeType.PLAIN_TEXT, cacheStore.getCacheDirectory().resolve(currMetadata.fileName()).toFile());
+            googleDrive.updateFile(currMetadata.fileId(), DriveMimeType.PLAIN_TEXT, cacheStore.getFileDirectory().resolve(currMetadata.fileName()).toFile());
         } catch (IOException e) {
             log.error("Failed to update hymn file on Google Drive for '{}': {}", currMetadata.hymnName(), e.getMessage());
             throw e;
         }
         try {
-            googleDrive.updateFile(hymnTimestampFileID, DriveMimeType.PLAIN_TEXT, cacheStore.getCacheDirectory().resolve(HYMN_CACHE_TIMESTAMPS_FILE).toFile());
+            googleDrive.updateFile(hymnTimestampFileID, DriveMimeType.PLAIN_TEXT, cacheStore.getFileDirectory().resolve(HYMN_CACHE_TIMESTAMPS_FILE).toFile());
         } catch (IOException e) {
             log.error("Failed to update cloud hymn cache timestamps file: {}", e.getMessage());
             throw e;
@@ -93,8 +96,8 @@ public class HymnStore {
 
     private void createNewHymnCache(String hymnName, DateTime timestamp, String content) throws IOException {
         String fileName = "hymn_" + hymnName.replaceAll("\\s+", "_").toLowerCase() + "_" + timestamp.getValue() + ".txt";
-        Path localFilePath = cacheStore.getCacheDirectory().resolve(fileName);
-        cacheStore.setCache(fileName, content);
+        Path localFilePath = cacheStore.getFileDirectory().resolve(fileName);
+        cacheStore.setFile(fileName, content);
 
         String fileId;
         try {
@@ -108,7 +111,7 @@ public class HymnStore {
         hymnCacheTimestampsLocal.put(hymnName, newMetadata);
 
         try {
-            googleDrive.updateFile(hymnTimestampFileID, DriveMimeType.PLAIN_TEXT, cacheStore.getCacheDirectory().resolve(HYMN_CACHE_TIMESTAMPS_FILE).toFile());
+            googleDrive.updateFile(hymnTimestampFileID, DriveMimeType.PLAIN_TEXT, cacheStore.getFileDirectory().resolve(HYMN_CACHE_TIMESTAMPS_FILE).toFile());
         } catch (IOException e) {
             log.error("Failed to update cloud hymn cache timestamps file after creating new hymn '{}': {}", hymnName, e.getMessage());
             throw e;
@@ -140,12 +143,12 @@ public class HymnStore {
             }
         }
 
-        if (!cacheStore.cacheExists(HYMN_CACHE_TIMESTAMPS_FILE)) {
+        if (!cacheStore.fileExists(HYMN_CACHE_TIMESTAMPS_FILE)) {
             log.warn("Local hymn cache timestamps file not found: {}", HYMN_CACHE_TIMESTAMPS_FILE);
             hymnCacheTimestampsLocal = new HashMap<>();
         } else {
             try {
-                String jsonStringLocal = cacheStore.getCache(HYMN_CACHE_TIMESTAMPS_FILE);
+                String jsonStringLocal = cacheStore.getFileContent(HYMN_CACHE_TIMESTAMPS_FILE);
                 hymnCacheTimestampsLocal = mapJsontoHymnCacheMap(jsonStringLocal);
             } catch (IOException e) {
                 log.error("Failed to read local hymn cache timestamps file: {}", e.getMessage());
@@ -162,7 +165,7 @@ public class HymnStore {
             if (localCache == null || liveCache.lastUpdated().getValue() > localCache.lastUpdated().getValue()) {
                 log.info("Updating local cache timestamp for {}: {} -> {}", hymnName, localCache, liveCache);
 
-                Path localCachePath = cacheStore.getCacheDirectory().resolve(liveCache.fileName());
+                Path localCachePath = cacheStore.getFileDirectory().resolve(liveCache.fileName());
                 try {
                     googleDrive.downloadFile(liveCache.fileId(), localCachePath);
                 } catch (Exception e) {

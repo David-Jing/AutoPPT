@@ -2,7 +2,6 @@ package org.fcnabc.autoppt.verses.providers;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
-import com.google.inject.name.Named;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
+import org.fcnabc.autoppt.io.model.AppConfig;
 import org.fcnabc.autoppt.language.Language;
 import org.fcnabc.autoppt.verses.VerseProvider;
 import org.fcnabc.autoppt.verses.models.BibleBook;
@@ -40,9 +40,9 @@ public class EnglishVerseProvider implements VerseProvider {
     private final HttpClient httpClient;
 
     @Inject
-    public EnglishVerseProvider(@Named("ESV_API_KEY") String esvApiKey, HttpClient httpClient) {
+    public EnglishVerseProvider(AppConfig appConfig, HttpClient httpClient) {
         this.httpClient = httpClient;
-        this.esvApiKey = esvApiKey;
+        this.esvApiKey = appConfig.ESVApiKey();
     }
 
     @Override

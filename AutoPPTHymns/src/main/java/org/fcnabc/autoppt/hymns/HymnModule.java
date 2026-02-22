@@ -5,21 +5,20 @@ import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
-import org.fcnabc.autoppt.io.CacheStore;
-import org.fcnabc.autoppt.io.KeyStore;
-import org.fcnabc.autoppt.io.model.Key;
+import org.fcnabc.autoppt.io.FileStore;
+import org.fcnabc.autoppt.io.AppConfigStore;
 
 public class HymnModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(HymnStore.class).in(Singleton.class);
-        bind(CacheStore.class).in(Singleton.class);
+        bind(FileStore.class).in(Singleton.class);
     }
 
     @Provides
     @Named("HYMN_TIMESTAMP_FILE_ID")
     @Singleton
-    String provideHymnTimestampFileID(KeyStore getKeys) {
-        return getKeys.getKey(Key.HYMN_TIMESTAMP_FILE_ID);
+    String provideHymnTimestampFileID(AppConfigStore appConfigStore) {
+        return appConfigStore.getAppConfig().HymnStoreGoogleFileId();
     }
 }

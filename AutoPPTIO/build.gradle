@@ -6,6 +6,14 @@ dependencies {
     // Implementation dependencies
     implementation 'com.google.guava:guava:33.5.0-jre'
     implementation 'com.google.inject:guice:7.0.0'
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'com.google.code.gson:gson:2.13.2'
+
+    // Lombok dependencies
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    testCompileOnly 'org.projectlombok:lombok:1.18.42'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
 
     // Testing dependencies
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'

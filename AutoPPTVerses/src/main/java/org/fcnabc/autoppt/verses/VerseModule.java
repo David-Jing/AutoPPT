@@ -4,11 +4,10 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
-import com.google.inject.name.Named;
 import java.net.http.HttpClient;
 
-import org.fcnabc.autoppt.io.KeyStore;
-import org.fcnabc.autoppt.io.model.Key;
+import org.fcnabc.autoppt.io.AppConfigStore;
+import org.fcnabc.autoppt.io.model.AppConfig;
 import org.fcnabc.autoppt.language.Language;
 import org.fcnabc.autoppt.verses.providers.EnglishVerseProvider;
 
@@ -22,10 +21,9 @@ public class VerseModule extends AbstractModule {
     }
 
     @Provides
-    @Named("ESV_API_KEY")
     @Singleton
-    String provideEsvApiKey(KeyStore getKeys) {
-        return getKeys.getKey(Key.ESV_API_KEY);
+    AppConfig provideAppConfig(AppConfigStore appConfigStore) {
+        return appConfigStore.getAppConfig();
     }
 
     @Provides 

@@ -16,7 +16,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 
-
+import org.fcnabc.autoppt.io.model.AppConfig;
 import org.fcnabc.autoppt.verses.models.BibleBook;
 import org.fcnabc.autoppt.verses.models.BibleVerse;
 import org.fcnabc.autoppt.verses.models.BibleVerseCoordinates;
@@ -31,12 +31,13 @@ class EnglishVerseProviderTest {
     @Mock
     private HttpResponse<String> mockResponse;
 
-    private final String dummyKey = "test-api-key";
+    @Mock
+    private AppConfig dummyConfig;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        provider = new EnglishVerseProvider(dummyKey, mockHttpClient);
+        provider = new EnglishVerseProvider(dummyConfig, mockHttpClient);
     }
 
     @Test
