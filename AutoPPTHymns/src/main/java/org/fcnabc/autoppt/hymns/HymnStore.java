@@ -20,8 +20,9 @@ import com.google.inject.name.Named;
 import org.fcnabc.autoppt.google.GoogleDrive;
 import org.fcnabc.autoppt.google.models.DriveMimeType;
 import org.fcnabc.autoppt.io.FileStore;
+import org.fcnabc.autoppt.io.model.AppConfig;
 import org.fcnabc.autoppt.hymns.models.Hymn;
-import org.fcnabc.autoppt.hymns.models.HymnMetadata;
+import org.fcnabc.autoppt.hymns.models.HymnCollection;
 
 @Slf4j
 @Singleton
@@ -31,14 +32,14 @@ public class HymnStore {
     private FileStore cacheStore;
     private GoogleDrive googleDrive;
     private String hymnTimestampFileID;
-    private Map<String, HymnMetadata> hymnCacheTimestampsCloud;
-    private Map<String, HymnMetadata> hymnCacheTimestampsLocal;
+    private Map<String, HymnCollection> hymnCacheTimestampsCloud;
+    private Map<String, HymnCollection> hymnCacheTimestampsLocal;
 
     @Inject
-    public HymnStore(FileStore cacheStore, GoogleDrive googleDrive, @Named("HYMN_TIMESTAMP_FILE_ID") String hymnTimestampFileID) throws IOException {
+    public HymnStore(FileStore cacheStore, GoogleDrive googleDrive, AppConfig appConfig) throws IOException {
         this.cacheStore = cacheStore;
         this.googleDrive = googleDrive;
-        this.hymnTimestampFileID = hymnTimestampFileID;
+        this.hymnTimestampFileID = appConfig.HymnStoreGoogleFileId();
 
         refreshCacheTimestamps();
         syncCacheTimestamps();
@@ -49,7 +50,7 @@ public class HymnStore {
     }
 
     public Hymn getHymn(String hymnName) throws IOException {
-        HymnMetadata cache = hymnCacheTimestampsLocal.get(hymnName);
+        HymnCollection cache = hymnCacheTimestampsLocal.get(hymnName);
         if (cache == null) {
             throw new IOException("Hymn not found in local cache: " + hymnName);
         }
@@ -59,7 +60,7 @@ public class HymnStore {
 
     public void setHymn(String hymnName, DateTime timestamp, String content) throws IOException {
         if (hymnCacheTimestampsLocal.containsKey(hymnName)) {
-            HymnMetadata metadata = hymnCacheTimestampsLocal.get(hymnName);
+            HymnCollection metadata = hymnCacheTimestampsLocal.get(hymnName);
             if (timestamp.getValue() <= metadata.lastUpdated().getValue()) {
                 log.warn("Attempted to set hymn '{}' with an older or equal timestamp. Operation ignored.", hymnName);
                 return;
@@ -73,9 +74,9 @@ public class HymnStore {
 
     // --------------------------------------------------------------------
 
-    private void updateHymnCache(HymnMetadata currMetadata, String content) throws IOException {
+    private void updateHymnCache(HymnCollection currMetadata, String content) throws IOException {
         // Update local timestamp and cache file
-        HymnMetadata newMetadata = new HymnMetadata(currMetadata.hymnName(), currMetadata.lastUpdated(), currMetadata.fileName(), currMetadata.fileId());
+        HymnCollection newMetadata = new HymnCollection(currMetadata.hymnName(), currMetadata.lastUpdated(), currMetadata.fileName(), currMetadata.fileId());
         hymnCacheTimestampsLocal.put(currMetadata.hymnName(), newMetadata);
         cacheStore.setFile(currMetadata.fileName(), content);
 
@@ -107,7 +108,7 @@ public class HymnStore {
             throw e;
         }
 
-        HymnMetadata newMetadata = new HymnMetadata(hymnName, timestamp, fileName, fileId);
+        HymnCollection newMetadata = new HymnCollection(hymnName, timestamp, fileName, fileId);
         hymnCacheTimestampsLocal.put(hymnName, newMetadata);
 
         try {
@@ -118,10 +119,10 @@ public class HymnStore {
         }
     }
 
-    private Map<String, HymnMetadata> mapJsontoHymnCacheMap(String jsonString) {
+    private Map<String, HymnCollection> mapJsontoHymnCacheMap(String jsonString) {
         try {
             Gson gson = new Gson();
-            Type type = new TypeToken<Map<String, HymnMetadata>>() {}.getType();
+            Type type = new TypeToken<Map<String, HymnCollection>>() {}.getType();
             return gson.fromJson(jsonString, type);
         } catch (JsonSyntaxException e) {
             log.error("Failed to parse JSON string into HymnCache map: {}", e.getMessage());
@@ -159,8 +160,8 @@ public class HymnStore {
 
     private void syncCacheTimestamps() {
         for (String hymnName : hymnCacheTimestampsCloud.keySet()) {
-            HymnMetadata liveCache = hymnCacheTimestampsCloud.get(hymnName);
-            HymnMetadata localCache = hymnCacheTimestampsLocal.get(hymnName);
+            HymnCollection liveCache = hymnCacheTimestampsCloud.get(hymnName);
+            HymnCollection localCache = hymnCacheTimestampsLocal.get(hymnName);
 
             if (localCache == null || liveCache.lastUpdated().getValue() > localCache.lastUpdated().getValue()) {
                 log.info("Updating local cache timestamp for {}: {} -> {}", hymnName, localCache, liveCache);

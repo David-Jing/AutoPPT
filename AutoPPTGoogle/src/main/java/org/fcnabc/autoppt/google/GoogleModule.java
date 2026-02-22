@@ -10,8 +10,6 @@ import com.google.inject.name.Names;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 
-import org.fcnabc.autoppt.io.AppConfigStore;
-import org.fcnabc.autoppt.io.model.AppConfig;
 import com.google.api.client.auth.oauth2.Credential;
 
 public class GoogleModule extends AbstractModule {
@@ -25,12 +23,6 @@ public class GoogleModule extends AbstractModule {
     @Singleton
     NetHttpTransport provideNetHttpTransport() throws GeneralSecurityException, IOException {
         return GoogleNetHttpTransport.newTrustedTransport();
-    }
-
-    @Provides
-    @Singleton
-    AppConfig provideAppConfig(AppConfigStore appConfigStore) {
-        return appConfigStore.getAppConfig();
     }
 
     @Provides

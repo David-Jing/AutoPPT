@@ -6,8 +6,6 @@ import com.google.inject.Singleton;
 import com.google.inject.multibindings.MapBinder;
 import java.net.http.HttpClient;
 
-import org.fcnabc.autoppt.io.AppConfigStore;
-import org.fcnabc.autoppt.io.model.AppConfig;
 import org.fcnabc.autoppt.language.Language;
 import org.fcnabc.autoppt.verses.providers.EnglishVerseProvider;
 
@@ -18,12 +16,6 @@ public class VerseModule extends AbstractModule {
         @SuppressWarnings("null")
         MapBinder<Language, VerseProvider> providerBinder = MapBinder.newMapBinder(binder(), Language.class, VerseProvider.class);
         providerBinder.addBinding(Language.ENGLISH).to(EnglishVerseProvider.class);
-    }
-
-    @Provides
-    @Singleton
-    AppConfig provideAppConfig(AppConfigStore appConfigStore) {
-        return appConfigStore.getAppConfig();
     }
 
     @Provides 

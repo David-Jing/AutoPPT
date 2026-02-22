@@ -9,6 +9,7 @@ dependencies {
     implementation 'org.json:json:20251224'
     implementation 'org.slf4j:slf4j-api:2.0.17'
     implementation 'ch.qos.logback:logback-classic:1.5.27'
+    implementation 'org.msgpack:jackson-dataformat-msgpack:0.9.11'
     implementation project(':AutoPPTGoogle')
     implementation project(':AutoPPTIO')
 
