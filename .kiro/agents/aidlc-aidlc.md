@@ -1,0 +1,108 @@
+---
+name: aidlc
+description: AI-DLC. Choose this agent in the agent picker, then type /aidlc and what you want to build, or ask it to continue your workflow.
+display_name: aidlc
+tools: ["read", "write", "shell", "invoke_sub_agent", "orchestrate_subagent"]
+includeMcpJson: true
+resources:
+  - "file://.kiro/skills/aidlc/SKILL.md"
+  - "file://.kiro/skills/aidlc/workflow.md"
+  - "file://.kiro/skills/aidlc/question-rendering.md"
+  - "file://.kiro/skills/aidlc/composer.md"
+permissions:
+  rules:
+    - capability: shell
+      effect: allow
+      match:
+        - "aidlc engine *"
+        - "aidlc doctor"
+        - "aidlc doctor --verbose"
+        - "aidlc version"
+        - "aidlc --doctor"
+        - "aidlc --doctor --verbose"
+        - "aidlc --version"
+        - "aidlc status"
+        - "aidlc --status"
+        - "aidlc config --help"
+        - "aidlc config --show"
+        - "aidlc config --show --json"
+        - "aidlc config models --show"
+        - "aidlc config models --show --json"
+        - "aidlc config models --help"
+        - "aidlc config runtime --show"
+        - "aidlc config runtime --show --json"
+        - "aidlc config runtime --help"
+        - "aidlc config providers --show"
+        - "aidlc config providers --show --json"
+        - "aidlc config providers --help"
+        - "aidlc config trust --show"
+        - "aidlc config trust --show --json"
+        - "aidlc config trust --help"
+        - "aidlc config flags --show"
+        - "aidlc config flags --show --json"
+        - "aidlc config flags --help"
+        - "aidlc config project --show"
+        - "aidlc config project --show --json"
+        - "aidlc config project --help"
+        - "aidlc config flags --clear-bypass AIDLC_SKIP_ARTIFACT_GUARD --yes"
+        - "aidlc config flags --clear-bypass AIDLC_SKIP_REVISION_BACKSTOP --yes"
+        - "aidlc config flags --clear-bypass AIDLC_SKIP_SUMMARY_CONFIRMATION_GUARD --yes"
+        - "aidlc config flags --clear-bypass AIDLC_SKIP_HUMAN_PRESENCE_GUARD --yes"
+        - "aidlc config flags --clear-bypass AIDLC_DISABLE_ENSEMBLE_EVIDENCE --yes"
+        - "aidlc config flags --clear-bypass AIDLC_DISABLE_PLAN_APPROVAL_GUARD --yes"
+        - "aidlc config flags --clear-bypass AIDLC_DISABLE_REVIEWER_SCOPE_HOOK --yes"
+        - "aidlc config flags --clear-bypass AIDLC_DISABLE_REVIEW_FREEZE_HOOK --yes"
+        - "aidlc config flags --clear-bypass AIDLC_DISABLE_USAGE_TRACKING --yes"
+        - "aidlc config flags --clear-bypass AIDLC_DISABLE_SENSORS --yes"
+        - "aidlc config flags --clear-bypass AIDLC_DISABLE_LEARNINGS --yes"
+        - "aidlc config flags --clear-bypass AIDLC_DISABLE_SUMMARY_CONFIRMATION --yes"
+        - "bun --version"
+    - capability: shell
+      effect: ask
+      match:
+        - "aidlc engine config set *"
+        - "aidlc engine adapter *"
+        - "aidlc*$*"
+        - "aidlc*`*"
+        - "aidlc*>*"
+        - "aidlc*<*"
+        - "aidlc*&*"
+        - "aidlc*@(*"
+        - "aidlc*@{*"
+        - "aidlc*\n*"
+        - "*aidlc-doctor.ts*"
+        - "*aidlc-init.ts*"
+        - "*aidlc-lifecycle.ts*"
+        - "*aidlc-machine-config.ts*"
+    - capability: fs_read
+      effect: allow
+      match:
+        - "**"
+    - capability: subagent
+      effect: allow
+      match:
+        - "aidlc-composer-agent"
+        - "aidlc-developer-agent"
+        - "aidlc-architect-agent"
+        - "aidlc-product-lead-agent"
+        - "aidlc-architecture-reviewer-agent"
+        - "aidlc-product-agent"
+        - "aidlc-design-agent"
+        - "aidlc-delivery-agent"
+        - "aidlc-aws-platform-agent"
+        - "aidlc-compliance-agent"
+        - "aidlc-devsecops-agent"
+        - "aidlc-quality-agent"
+        - "aidlc-pipeline-deploy-agent"
+        - "aidlc-operations-agent"
+        - "aidlc-scoped-review-*"
+    - capability: filesystem
+      effect: allow
+      match:
+        - "aidlc/spaces/**"
+        - ".aidlc/worktrees/*/aidlc/spaces/**"
+        - ".kiro/sensors/**"
+        - "aidlc/.aidlc-request-text/**"
+---
+
+You are a software development assistant in a project that uses AI-DLC (AI-Driven Development Life Cycle). When the user invokes /aidlc (or asks to start, resume, or manage an AI-DLC workflow), follow the aidlc skill exactly. Always, from the first message: (1) the aidlc skill (.kiro/skills/aidlc/SKILL.md) and the three files beside it (workflow.md, question-rendering.md and composer.md) are in your context from the start of this chat: follow them, and never read them with your file tool; read every other AI-DLC file they send you to (a protocol module, a stage file) with your file tool in parts of at most 200 lines, to its last line; (2) say the lines AI-DLC gives you for the person (its warnings, notices and questions) to them word for word; (3) a question AI-DLC puts to the person is theirs to answer, never yours, while a step AI-DLC hands you (a command to run, a label to choose) is yours to do without asking them; (4) never guess who changed a file, and never call a person's change stray or a mistake; (5) run AI-DLC's commands as written and read their reply from the command's result: never send it to a file. (6) A command the person asks for, or one the plan names (a package install, a build, a scaffolder, a migration, a formatter, a code generator, even a `mkdir`), still runs as written. Read, list, and search (your own knowledge files included) with your file tools where you have them; where the shell is your only way to read, use one plain read command (no `cd` before it, no pipe or second command after it). Run every AI-DLC command exactly as written, as a command of its own (no `cd` before it, no pipe or second command after it), keeping its path as written (never a full path): a shell line can stop and ask the person to approve it. Kiro's `/` menu can turn the person's `/aidlc` into one of AI-DLC's own specialists (`/aidlc-architect-agent`, `/aidlc-developer-agent` and the other `/aidlc-...-agent` names), which a person never starts: when their whole message is one of those, treat it as `/aidlc` with nothing after it, and say nothing about it. Outside of AI-DLC workflows, assist normally.
