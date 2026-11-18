@@ -26,7 +26,7 @@ Reference decks: "Sunday Worship Slides September 27th 2026 – Regular" (60 sli
 | D13 | Hymn "Discard my changes" only discards unsaved local edits. Users cannot restore older versions. |
 | D14 | Chinese defaults to **Traditional**: Chinese UI text, plus a separate Chinese template (possibly bilingual). Designed now, built later (§11). |
 | D15 | No preview in the app. After generation the deck opens in the browser for checking. |
-| D16 | Unsigned installers. macOS builds for both Apple Silicon and Intel (F11). |
+| D16 | No installer: each platform ships as an unsigned, zipped app that runs on double-click, with Java bundled. macOS builds for both Apple Silicon and Intel (F11). |
 | D17 | Built-in Google Slides features are used wherever they meet a formatting rule. Only the gaps get custom code (§7). |
 | D18 | No remote logging. Errors are shown to the user, who contacts the developer. |
 | D19 | The template and slide types are maintained by the developer and are read-only in the app. |
@@ -113,7 +113,7 @@ Every hymn background carries its own styled `{Title}` and `{Text}` boxes, so hy
 - G2. Verse, hymn and text slides follow §7 and need no touch-up in most weeks.
 - G3. Users can edit and add hymns and share them with everyone from inside the app.
 - G4. Template changes (moving slides, new backgrounds, new schedule roles) need no code change.
-- G5. One codebase builds installers for Windows and macOS.
+- G5. One codebase builds a ready-to-run app for Windows and macOS.
 - G6. The design allows a Traditional-Chinese UI and template to be added without restructuring.
 
 **Non-goals (v1)**
@@ -143,6 +143,7 @@ Every hymn background carries its own styled `{Title}` and `{Text}` boxes, so hy
 | Data repo / GitHub | "shared library" |
 | Pull / sync | "Check for updates" (also runs automatically on start) |
 | Commit + push | "Save for everyone" |
+| Delete file + push | "Delete for everyone" |
 | Revert local edits | "Discard my changes" |
 | Edited locally, not pushed | "Only on this computer" badge |
 | Push rejected (sha mismatch or file exists) | "Someone else saved this hymn first. Choose Check for updates, then make your change again." |
@@ -157,13 +158,28 @@ Every hymn background carries its own styled `{Title}` and `{Text}` boxes, so hy
 
 Priority: **M** = MVP, **L** = later.
 
+### F0. Start-up and internet connection (M)
+
+An internet connection is required to use the app. Google Slides, the ESV API and the shared library are all online, so there is no offline mode.
+
+- **Start-up screen.** Every launch opens a small start-up screen with the app name, the version, and one status line at a time:
+  1. "Checking your internet connection…"
+  2. "Checking for updates…": a newer app version (F11), and, except on first start, the shared library. On first start there are no keys yet, so the shared library is loaded in the wizard's last step (F8).
+  3. "Getting ready…" (loading the saved keys; skipped on first start)
+
+  It then opens the first-start wizard (F8) on first start, or the main window otherwise.
+- **No connection at start-up.** The start-up screen stops at step 1 and shows "You're not connected to the internet. Connect, then choose Try again." with **Try again** (the default button) and **Quit**; Escape does nothing. Nothing else opens until the check passes, and the app re-checks by itself every 5 seconds.
+- **Connection lost while the app is open.** The main window is covered by the same message. Typed work stays where it is (the service autosaves locally, F1). Any action that was running (making slides, a hymn save) reports Problem with "The internet connection was lost" instead of a generic error. When the connection returns, the cover closes by itself.
+- **During the first-start wizard,** a lost connection shows the same cover; the wizard stays on the same step and keeps what was typed.
+- **How it checks.** A short HTTPS request to a Google endpoint with a 5-second timeout; while not connected, it re-checks every 5 seconds. A captive portal or blocked network counts as "not connected".
+
 ### F1. Service builder (M)
 
 The main window is a master–detail view. The left side lists the service's slides in the order they will be generated. Selecting one shows its settings on the right.
 
 ```
 ┌ AutoPPT ─────────────────────────────────────────────────────────────────────┐
-│ Sunday 22 Nov 2026 ▾    Order: Normal ▾                       [Make slides ▸]│
+│ Hi Grace   Sunday 22 Nov 2026 ▾   Order: Normal ▾             [Make slides ▸]│
 ├──────────────────────────────┬───────────────────────────────────────────────┤
 │ ≡ Opening Passage  John 8:12 │ Hymn                                          │
 │ ≡ Sunday Service Header      │ ┌───────────────────────────────────────────┐ │
@@ -181,6 +197,7 @@ The main window is a master–detail view. The left side lists the service's sli
 ```
 (✎ = the user finishes this slide in Google Slides.)
 
+- **Greeting.** The top bar greets the user by the name entered at first start ("Hi Grace"). The name can be changed in Settings (F10).
 - **Service.** The date defaults to the coming Sunday: today if today is Sunday, otherwise the next Sunday. Choosing an order (Normal, Holy Communion) fills the list with that preset's default slides.
 - **Reorder.** Drag a row by its ≡ handle, or use Move up / Move down (Alt+↑/↓).
 - **Add.** "+ Add slide" lists the slide types from config. Any type can appear more than once.
@@ -220,14 +237,15 @@ The main window is a master–detail view. The left side lists the service's sli
 
 ### F3. Hymn editing and sharing (M)
 - Choosing a hymn fills the editor with the shared version. Edits apply to this service immediately, shared or not.
+- **Confirmations.** "Save for everyone", "Discard my changes" and "Delete for everyone" each ask first, naming the hymn and what will happen (for example "Save your changes to 'Love Incarnate' for everyone?"). **Cancel** is the default button and Escape cancels, so a stray Enter never saves, discards or deletes. Cancel leaves everything as it was.
 - **Save for everyone.** Writes the hymn to `AutoPPTData` with a message such as "Update hymn: Love Incarnate (by Grace)".
 - **Discard my changes.** Returns to the shared version (D13).
 - **New hymn….** The last dropdown entry. Takes a title and pasted lyrics, auto-split into blocks on blank lines and `[Chorus]`-style headers.
-- **Updates.** The shared library is refreshed on start and on "Check for updates". A local copy lets users browse and prepare hymns without internet. Saving for everyone and making slides need a connection.
+- **Updates.** The shared library is refreshed on start and on "Check for updates". The local copy is a cache that makes start-up fast; the app does not run offline (F0).
 - **Conflict.** The first save wins (D24). A later save based on an older copy, or a new hymn whose id already exists, is refused with "Someone else saved this hymn first. Choose Check for updates, then make your change again." (§8.3).
 - **New hymn id.** Derived from the title (`love-incarnate`). If that id already exists in the library, a number is added (`love-incarnate-2`).
 - **Migration.** A one-time developer tool converts the legacy `HymnDatabase.db` (116 hymns).
-- (L) Delete a hymn.
+- **Delete for everyone.** Removes a hymn from the shared library after a confirmation ("Delete 'Love Incarnate' for everyone?"). It is a Contents API `DELETE` with the last-known `sha`, so the first-save-wins rule (D24) applies: if someone changed the hymn first, the delete is refused with the same "Check for updates" message. A service row already using the hymn keeps its lyrics for that service. Users cannot undo a delete (D13); the developer can restore it from history.
 
 ### F4. Bible passages (M)
 - Text comes from the ESV API `/v3/passage/text/`. The API parses references itself (`John 1:1`, `jn11.35`, `Genesis 1-3`, `John 3:16, 18`) and returns the canonical reference, so the app does not build an English reference parser.
@@ -283,6 +301,8 @@ The main window is a master–detail view. The left side lists the service's sli
 - Values are written with `replaceAllText`, which keeps the cell formatting.
 
 ### F8. First start and setup file (M)
+The setup screens appear only on first start, or when the saved keys are missing or replaced. They are a step-by-step wizard: one step per screen, with Back and Next and a "Step n of N" marker (setup file, your name, sign in with Google, getting the shared library ready). Checking and saving the keys happen within the setup-file step. Later starts open the main window directly.
+
 1. "Drop your setup file here" (drag and drop or Browse). The file (e.g. `fcnabc.autoppt`) holds:
    - the Google OAuth client ID and secret;
    - the ESV API key;
@@ -316,9 +336,14 @@ The main window is a master–detail view. The left side lists the service's sli
 - Replace setup file; Sign out of Google; Your name.
 - Theme (light / dark).
 - Language: the selector is hidden until §11 is built.
+- **About:** the app version (e.g. "AutoPPT 1.0.0"), shown at the bottom of Settings. The same version appears on the start-up screen and in "Copy details for support" (F9).
 
-### F11. Installers and updates (M; auto-update is L)
-- `jpackage` (JDK 21) builds a Windows `.msi` and macOS `.dmg` files with a bundled runtime. The Windows `.msi` needs the WiX Toolset installed on the runner. `jpackage` cannot cross-compile, so each target runs on its own GitHub Actions runner:
+### F11. Distribution and update check (M)
+- `jpackage --type app-image` (JDK 21) builds a ready-to-run app with a bundled, trimmed Java runtime. Nothing is installed:
+  - **Windows:** an `AutoPPT/` folder holding `AutoPPT.exe`, `app/` and `runtime/`, shipped as `AutoPPT-<version>-windows-x64.zip`. The user unzips it once and double-clicks `AutoPPT.exe` (a desktop shortcut works; the `.exe` alone does not run without its folder).
+  - **macOS:** `AutoPPT.app`, shipped as `AutoPPT-<version>-macos-<arm64|x64>.zip`. The user unzips it and double-clicks the app.
+- No `.msi` or `.dmg`, so no WiX Toolset is needed. Settings and secrets live in the OS app-data folder, not next to the app, so replacing the folder with a new version keeps them.
+- `jpackage` cannot cross-compile, so each target runs on its own GitHub Actions runner:
 
   | Target | Runner |
   |---|---|
@@ -327,8 +352,9 @@ The main window is a master–detail view. The left side lists the service's sli
   | macOS Intel | `macos-15-intel` |
 
   `macos-15-intel` is GitHub's last x86_64 image and is available until August 2027 ([actions/runner-images#13045](https://github.com/actions/runner-images/issues/13045)). After that, Intel builds stop and Apple Silicon remains (D16).
-- Unsigned. An install guide covers Windows SmartScreen ("More info → Run anyway") and macOS (open once, then Privacy & Security → "Open Anyway").
-- On start, the app checks the public `AutoPPT` Releases page. If there is a new version, it links straight to the installer for this computer (Windows, Apple Silicon or Intel Mac, chosen from `os.name` and `os.arch`).
+- Unsigned. A short "first run" guide covers Windows SmartScreen ("More info → Run anyway") and macOS (open once, then Privacy & Security → "Open Anyway").
+- **Update check.** During start-up (F0) the app makes one unauthenticated request to GitHub's public "latest release" endpoint for `AutoPPT` and compares its version tag with its own. If the release is newer, the start-up screen shows "A new version of AutoPPT is available (1.1.0)" with **Download** and **Continue**. Download opens the release's zip for this computer (Windows, Apple Silicon or Intel Mac, chosen from `os.name` and `os.arch`) in the browser; the user unzips it and replaces the old app by hand. Continue opens the app as usual. If the check fails or takes longer than 5 seconds, start-up carries on silently. Only the latest published release counts (the endpoint already ignores drafts and pre-releases), and "newer" means a higher `major.minor.patch` version. On this screen **Continue** is the default button and Escape means Continue.
+- The app never downloads or replaces itself.
 
 ### F12. Chinese Monthly Scripture (M)
 - The app creates the slide from a title + text layout. The title is set (default 本月金句) and the body is left empty (D21).
@@ -572,7 +598,7 @@ Love incarnate, Love divine
 - Because nothing expires, a leaked file stays usable until the developer revokes its keys. Revoking the shared-library token stops "Save for everyone" and updates for every user until each gets a new setup file.
 - Never committed: add `*.autoppt` to both repos' `.gitignore`.
 
-**Bundled fonts.** Each font's licence file ships next to it in the installer, as the GUST, OFL and Apache licences require.
+**Bundled fonts.** Each font's licence file ships next to it in the app zip, as the GUST, OFL and Apache licences require.
 
 ---
 
@@ -599,7 +625,7 @@ Expected scope (D14): Traditional-Chinese UI text, plus a separate Chinese templ
 | S1 | Measurement drifts from what Slides renders, so slides overflow or are under-filled. Sources: Century Gothic vs. TeX Gyre Adventor widths (regular and bold) and kerning; Times New Roman vs. Tinos; line spacing; the text box's inner padding. | Write sample verses, hymns, titles and announcements through the API into a test copy of the template. Compare Slides' line breaks and text heights (via the exported PDF) with the paginator's predictions. Derive the inner padding, check the line-spacing model, and only then set the safety margin in `layout.yaml`. If Adventor drifts too far, use the §7.4 fallback. |
 | S2 | The hanging indent with a superscript number renders unevenly. | One API-built slide testing `indentStart` / `indentFirstLine` with a tab vs. spaces after the number, plus `alignment: END` for the source line. |
 | S3 | Restricted `drive` scope in an unverified production app behaves differently than expected. | Sign in with a Gmail account that is not listed as a test user. Pass if the "unverified app" warning can be clicked through (fail if access is blocked) and the app still works on day 8. On failure, use the §10 fallback. |
-| S4 | Users are confused by the unsigned-installer warnings. | Install guide with screenshots. |
+| S4 | Users are confused by the unsigned-app warnings on first run. | First-run guide with screenshots. |
 
 ---
 
