@@ -92,13 +92,14 @@ Other conventions taken from the decks:
 
 ### 2.3 Regular template slides after the developer's update
 
-The developer prepends the Opening Passage template as slide 0, and every other slide moves down by one. The app finds slides by tag (F6), so the shift needs no code change.
+Template: [Source Worship Slide – Regular (v3)](https://docs.google.com/presentation/d/1Njchznjkd2toS1DqIvAStjP0w4gyMNq9S8j1q8v9U_E/edit), presentation id `1Njchznjkd2toS1DqIvAStjP0w4gyMNq9S8j1q8v9U_E` (set in `config/app.yaml`). 34 slides, 16:9. The app finds slides by tag (F6), so moving slides needs no code change. The `autoppt:` tags are not in the speaker notes yet; the developer adds them, and "Check template" reports any that are missing.
 
 | Slides | Purpose | Tag | Required placeholders |
 |---|---|---|---|
-| 0 | Opening Passage (new) | `autoppt:opening-passage` | `{Title}`, `{Text}`, `{Reference}` |
+| 0 | Opening Passage | `autoppt:opening-passage` | `{Text}` (28 pt, left). No title; the reference is the last paragraph of `{Text}` (F1). |
 | 1–5, 13 | Title + text layouts used by headers, scripture, announcements, catechism, Spiritual Wisdom, Chinese Monthly Scripture and others | `autoppt:title-text …` (one tag per layout) | `{Title}`, `{Text}` |
-| 6–7, 8–10, 11–12, 14, 15, 16 | Static: Lord's Prayer, Holy Communion, Apostles' Creed, Offering, Doxology, Benediction | `autoppt:static <name>` | none |
+| 6–7, 8–10, 11–12, 15, 16 | Static: Lord's Prayer, Holy Communion (8 heading, 9–10 1 Corinthians 11:23-29), Apostles' Creed, Doxology, Benediction | `autoppt:static <name>` | none |
+| 14 | Offering: fixed "OFFERING" heading plus a passage box | `autoppt:offering` | `{Text}` (one font size) |
 | 17 | Next Week's Schedule table | `autoppt:schedule` | `{Date}` and the role placeholders (F7) |
 | 18–33 | Hymn backgrounds | `autoppt:hymn-background` | `{Title}`, `{Text}`, styled like the title + text layouts |
 
@@ -208,7 +209,8 @@ The main window is a master–detail view. The left side lists the service's sli
 
 | Slide type | Settings |
 |---|---|
-| Opening Passage | Passage field (one or more verses) and an optional title. Text goes in the body and the reference in its own box. Long passages continue onto more copies of the same layout; the reference box is filled on the last slide only and emptied on the others. |
+| Opening Passage | Passage field (one or more verses). No title. The passage and then its reference ("—John 8:12") go in the single `{Text}` box; the reference is the last paragraph, placed toward the right (V6). Long passages continue onto more copies of slide 0, with the reference on the last one only. |
+| Offering | Passage field (any verses, same rules and tooltip as Bible Passage). The text goes under the fixed "OFFERING" heading, with the reference line after it (V6). Long passages continue onto more copies of slide 14. |
 | Bible Passage (Call to Worship, Monthly Scripture, Memorization this/next week, Prayer of Confession, Sermon Passage) | Passage field, optional title, and a "show the reference after the passage" toggle. Shows the passage text from the ESV API, or a plain error. Separate passages are split with `;` only (F4). A help tooltip on the field shows what works ("Genesis 1:1-10", "John 3:16, 18", "Psalm 23; Romans 8:28") and what doesn't (Chinese book names, other translations). |
 | Chinese Monthly Scripture | Title only (default 本月金句). Note in the panel: "This slide is made with an empty body. Add the Chinese verse picture in Google Slides after making the slides." (F12) |
 | Hymn | Searchable dropdown of shared hymns (title, alternate titles, first line). Selecting one fills the lyrics editor (F3). |
@@ -231,8 +233,9 @@ The main window is a master–detail view. The left side lists the service's sli
   6. Every original template slide (layouts, static slides and hymn backgrounds) is deleted, leaving only the service.
 - The progress view shows each row as Done, Problem (plain reason), Skipped, or **To do in Google Slides**. The last one is used for the Chinese Monthly Scripture, with the slide number. One failed row does not stop the run. Its slides are left out and the row shows the reason.
 - **"Delete last week's slides when I make new ones"** (D12), on by default.
-  - After the new deck is made, the app looks for the user's most recent earlier deck: owned by the user, with `appProperties.autoppt=deck`, and not the deck just made. Only that one deck is moved to the Drive Trash. Decks shared by others are never touched.
+  - Only when the run finished with no Problem rows, the app looks for the user's most recent earlier deck: owned by the user, with `appProperties.autoppt=deck`, and not the deck just made. Only that one deck is moved to the Drive Trash. Decks shared by others are never touched.
   - The end-of-run summary names it: "Last week's slides ('…') were moved to the Trash. You can restore them from there for 30 days."
+- **A run that stops partway** (for example a lost connection). The app tries to move the half-built PPT to the Trash. If it cannot, it leaves the file, tells the operator it is incomplete and where it is, remembers its id locally, and trashes it on the next successful run. A stopped run never deletes last week's PPT, and a half-built PPT is never treated as last week's.
 - **Template access.** Before the first run, and when a copy fails, the app checks it can read the template. A 403/404 maps to "Ask the developer to share the slide template with your Google account and allow copying."
 
 ### F3. Hymn editing and sharing (M)
@@ -241,6 +244,7 @@ The main window is a master–detail view. The left side lists the service's sli
 - **Save for everyone.** Writes the hymn to `AutoPPTData` with a message such as "Update hymn: Love Incarnate (by Grace)".
 - **Discard my changes.** Returns to the shared version (D13).
 - **New hymn….** The last dropdown entry. Takes a title and pasted lyrics, auto-split into blocks on blank lines and `[Chorus]`-style headers.
+- **Reload all hymns** (Settings, F10). Throws away this computer's copy of the shared library and every unsaved hymn edit (including edits kept in the current service's rows), then downloads every hymn again from the shared library. It asks first: "Replace every hymn on this computer with the shared version? Changes you haven't saved for everyone will be lost." Cancel is the default button. It downloads into a temporary copy first; only when every hymn has arrived does it replace the local copy and clear the unsaved edits. If the download fails, nothing changes and the app says "Couldn't reload the hymns. Nothing was changed." It never changes the shared library itself.
 - **Updates.** The shared library is refreshed on start and on "Check for updates". The local copy is a cache that makes start-up fast; the app does not run offline (F0).
 - **Conflict.** The first save wins (D24). A later save based on an older copy, or a new hymn whose id already exists, is refused with "Someone else saved this hymn first. Choose Check for updates, then make your change again." (§8.3).
 - **New hymn id.** Derived from the title (`love-incarnate`). If that id already exists in the library, a number is added (`love-incarnate-2`).
@@ -281,16 +285,16 @@ The main window is a master–detail view. The left side lists the service's sli
 
 ### F6. Template and configuration (M; developer-maintained)
 - `config/app.yaml` names the template presentation ID. It holds a `templates` list so a Chinese template can be added later (§11).
-- Template slides are found by a **tag** in their speaker notes (§2.3). The app clears notes in the generated deck (F2), so tags never reach Presenter View. The placeholders `{Title}`, `{Text}`, `{Reference}` and the schedule roles stay as they are.
+- Template slides are found by a **tag** in their speaker notes (§2.3). The app clears notes in the generated deck (F2), so tags never reach Presenter View. The placeholders `{Title}`, `{Text}` and the schedule roles stay as they are.
 - `slide-types.yaml` defines each slide type: its template tag, layout kind, default title and editor. Layout kinds: passage, hymn, text-blocks, quote, header, static, schedule, title-only. "+ Add slide" is built from this file.
-- `presets/*.yaml` lists the default slides for each order. Normal includes Opening Passage, Chinese Monthly Scripture, the catechism rows and Spiritual Wisdom.
+- `presets/*.yaml` lists the default slides for each order. Normal includes Opening Passage, Chinese Monthly Scripture, the catechism rows, Spiritual Wisdom and Offering.
 - `layout.yaml` holds values the template cannot express: the gap between verses, the measurement safety margin, the "N/A" text and the source-line indent.
 - `fonts.yaml` maps each template font to its measurement font (§7.4).
 - A developer-only "Check template" command confirms that:
   - every tag in `slide-types.yaml` exists, and is unique except the hymn-background pool;
   - each tagged slide has the placeholders its layout kind needs (§2.3);
   - there is at least one hymn background;
-  - **every font used in the template has a measurement font**. A font without one is an error.
+  - **every font used in a placeholder box has a measurement font**. A font without one is an error. Fonts in static slides are never measured, so they are not checked.
 - Template edits are made on a copy. Once "Check template" passes, the copy's id replaces the old one in `app.yaml`, so no one generates from a half-edited template.
 
 ### F7. Next Week's Schedule (M)
@@ -334,6 +338,7 @@ The setup screens appear only on first start, or when the saved keys are missing
 ### F10. Settings (M)
 - Delete last week's slides (on/off).
 - Replace setup file; Sign out of Google; Your name.
+- Reload all hymns (F3).
 - Theme (light / dark).
 - Language: the selector is hidden until §11 is built.
 - **About:** the app version (e.g. "AutoPPT 1.0.0"), shown at the bottom of Settings. The same version appears on the start-up screen and in "Copy details for support" (F9).
@@ -401,7 +406,7 @@ The setup screens appear only on first start, or when the saved keys are missing
 - V3. Slides are balanced. The title repeats on each slide.
 - V4. Verse numbers are superscript.
 - V5. Hanging indent: continuation lines line up with the start of the first line's text. Spike S2 decides between a tab and spacing after the number.
-- V6. The optional reference line ("—Romans 8:13-14") follows the last verse, placed toward the right. The Opening Passage puts its reference in its own box instead.
+- V6. The reference line ("—Romans 8:13-14") follows the last verse as its own paragraph in the same text box, placed toward the right. It is optional for Bible Passage rows and always shown for Opening Passage and Offering. It appears on the last slide only.
 - V7. Several passages in one field each start a new slide.
 
 **Hymns**
@@ -428,8 +433,8 @@ The measurement font is bundled in the app (`app/src/main/resources/fonts/`) and
 | Template font (in Slides) | Measured with | Licence | Notes |
 |---|---|---|---|
 | **Century Gothic** (current; bundled) | **TeX Gyre Adventor** (regular, bold, italic, bold italic) | GUST Font License (free; redistribution allowed) | Monotype drew Century Gothic to match the widths of ITC Avant Garde Gothic, so documents could switch between them with no change to copyfit ([Wikipedia](https://en.wikipedia.org/wiki/Century_Gothic)). TeX Gyre Adventor is based on URW Gothic L, the standard Avant Garde substitute ([CTAN](https://ctan.org/pkg/tex-gyre-adventor)). Bold mapping (Century Gothic Bold ↔ Adventor Bold, which is Avant Garde Demi) and kerning are checked in S1. |
-| Times New Roman (bundled) | Tinos (or Liberation Serif) | Apache 2.0 / OFL | Metric-compatible clone; the template uses it in a few places |
-| Arial (not bundled) | Arimo (or Liberation Sans) | Apache 2.0 / OFL | Metric-compatible clone; bundle if the template starts using it |
+| Arial (not bundled) | Arimo (or Liberation Sans) | Apache 2.0 / OFL | Metric-compatible clone. The v3 template uses Arial only in fixed static text (Creed) and empty paragraph settings, which the app never measures; bundle Arimo if a placeholder starts using it |
+| Times New Roman (not bundled) | Tinos (or Liberation Serif) | Apache 2.0 / OFL | Metric-compatible clone; not used in the v3 template |
 | Calibri / Cambria / Georgia (not bundled) | Carlito / Caladea / Gelasio | OFL | Metric-compatible clones; bundle if the template starts using them |
 | Any Google Fonts family (e.g. Questrial, Montserrat, Poppins) | The same file from Google Fonts | OFL / Apache 2.0 | Exact match; the safest choice for new slide types |
 | **Noto Sans TC / Noto Serif TC** (Chinese template, later) | The same file | OFL | Traditional Chinese (§11) |
@@ -506,20 +511,20 @@ Love incarnate, Love divine
 │ Service, SlideRow · SlideTypeRegistry · Presets                             │
 │ Paginator + TextMeasurer (bundled fonts via fonts.yaml) + LineBreaker       │
 │ PassageLayout · HymnLayout (LyricsCleaner, LineSplitter) · TextBlockLayout  │
-│ DeckPlan ← slides {templateTag, replacements, styled ranges, notes}        │
+│ SlidePlan ← slides {templateTag, replacements, styled ranges, notes}       │
 │ ErrorModel (user message, support details, redaction)                       │
 └──────┬─────────────────────────┬──────────────────────────┬──────────────────┘
 ┌──────▼──────── google ───────┐ ┌───────▼──── esv ────────┐ ┌───▼──── library ─────┐
 │ GoogleAuth (loopback)        │ │ EsvClient (session cache │ │ LibrarySync (trees,  │
 │ TemplateReader (tags, boxes, │ │  ≤500 verses)            │ │  blobs, cache)       │
 │  fonts in use)               │ └──────────────────────────┘ │ HymnStore (PUT+sha)  │
-│ DeckWriter (batchUpdate)     │                              │ ReleaseChecker       │
-│ DeckCleaner (Trash)          │  secrets: SetupFile →        └──────────────────────┘
+│ SlideWriter (batchUpdate)    │                              │ ReleaseChecker       │
+│ SlidesCleaner (Trash)        │  secrets: SetupFile →        └──────────────────────┘
 └──────────────────────────────┘    secrets.json (user-only)
 ```
 
 - `core` has no network or Swing dependencies. Layout rules (§7.3) become unit tests, with cases from the two reference decks. Tests check the rules' intended result, not exact legacy output (D26).
-- `DeckPlan` is the seam: layout produces it, and `DeckWriter` turns it into a `batchUpdate`.
+- `SlidePlan` is the seam: layout produces it, and `SlideWriter` turns it into a `batchUpdate`.
 - `TextMeasurer` uses AWT `TextLayout` / `LineBreakMeasurer` with fonts loaded through `Font.createFont` from bundled resources.
 - Gradle (Kotlin DSL) with the wrapper pinned to a 9.x release and a Java 21 toolchain. Modules: `core`, `google`, `esv`, `library`, `app`.
 - Libraries:
@@ -622,7 +627,7 @@ Expected scope (D14): Traditional-Chinese UI text, plus a separate Chinese templ
 
 | # | Risk | Spike (do first) |
 |---|---|---|
-| S1 | Measurement drifts from what Slides renders, so slides overflow or are under-filled. Sources: Century Gothic vs. TeX Gyre Adventor widths (regular and bold) and kerning; Times New Roman vs. Tinos; line spacing; the text box's inner padding. | Write sample verses, hymns, titles and announcements through the API into a test copy of the template. Compare Slides' line breaks and text heights (via the exported PDF) with the paginator's predictions. Derive the inner padding, check the line-spacing model, and only then set the safety margin in `layout.yaml`. If Adventor drifts too far, use the §7.4 fallback. |
+| S1 | Measurement drifts from what Slides renders, so slides overflow or are under-filled. Sources: Century Gothic vs. TeX Gyre Adventor widths (regular and bold) and kerning; line spacing; the text box's inner padding. | Write sample verses, hymns, titles and announcements through the API into a test copy of the template. Compare Slides' line breaks and text heights (via the exported PDF) with the paginator's predictions. Derive the inner padding, check the line-spacing model, and only then set the safety margin in `layout.yaml`. If Adventor drifts too far, use the §7.4 fallback. |
 | S2 | The hanging indent with a superscript number renders unevenly. | One API-built slide testing `indentStart` / `indentFirstLine` with a tab vs. spaces after the number, plus `alignment: END` for the source line. |
 | S3 | Restricted `drive` scope in an unverified production app behaves differently than expected. | Sign in with a Gmail account that is not listed as a test user. Pass if the "unverified app" warning can be clicked through (fail if access is blocked) and the app still works on day 8. On failure, use the §10 fallback. |
 | S4 | Users are confused by the unsigned-app warnings on first run. | First-run guide with screenshots. |

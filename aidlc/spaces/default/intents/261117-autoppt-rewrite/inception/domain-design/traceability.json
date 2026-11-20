@@ -1,0 +1,414 @@
+{
+ "stage": "domain-design",
+ "upstream_ids": [
+  "US1.1",
+  "US1.2",
+  "US1.3",
+  "US2.1",
+  "US2.2",
+  "US2.3",
+  "US3.1",
+  "US3.2",
+  "US3.3",
+  "US3.4",
+  "US3.5",
+  "US4.1",
+  "US4.2",
+  "US5.1",
+  "US5.2",
+  "US5.3",
+  "US5.4",
+  "US5.5",
+  "US5.6",
+  "US5.7",
+  "US6.1",
+  "US6.2",
+  "US6.3",
+  "US7.1",
+  "US7.2",
+  "US7.3",
+  "US7.4",
+  "US7.5",
+  "US7.6",
+  "US8.1",
+  "US9.1",
+  "US9.2",
+  "US9.3",
+  "US9.4",
+  "US9.5",
+  "US10.1",
+  "US10.2",
+  "US11.1",
+  "US12.1",
+  "US12.2",
+  "US12.3",
+  "US12.4",
+  "US12.5",
+  "US12.6",
+  "US12.7",
+  "US13.1",
+  "US13.2",
+  "US13.3",
+  "US14.1",
+  "US14.3",
+  "US14.2",
+  "US15.1",
+  "US15.2",
+  "US15.3",
+  "US15.4",
+  "US16.1",
+  "US16.2",
+  "US17.1",
+  "US17.2",
+  "US18.1",
+  "US18.2",
+  "US18.3",
+  "US18.4",
+  "US18.5",
+  "US18.6",
+  "US18.7",
+  "US18.8",
+  "US18.9",
+  "US18.10"
+ ],
+ "coverage": [
+  {
+   "id": "US1.1",
+   "status": "OK",
+   "target": "Startup"
+  },
+  {
+   "id": "US1.2",
+   "status": "OK",
+   "target": "Startup"
+  },
+  {
+   "id": "US1.3",
+   "status": "OK",
+   "target": "ConnectionMonitor"
+  },
+  {
+   "id": "US2.1",
+   "status": "OK",
+   "target": "SetupService"
+  },
+  {
+   "id": "US2.2",
+   "status": "OK",
+   "target": "GoogleAuth"
+  },
+  {
+   "id": "US2.3",
+   "status": "OK",
+   "target": "ScreenViews"
+  },
+  {
+   "id": "US3.1",
+   "status": "OK",
+   "target": "ServiceBuilder"
+  },
+  {
+   "id": "US3.2",
+   "status": "OK",
+   "target": "ServiceBuilder"
+  },
+  {
+   "id": "US3.3",
+   "status": "OK",
+   "target": "ServiceBuilder"
+  },
+  {
+   "id": "US3.4",
+   "status": "OK",
+   "target": "ServiceStore"
+  },
+  {
+   "id": "US3.5",
+   "status": "OK",
+   "target": "SingleInstanceGuard, MakeSlidesRun"
+  },
+  {
+   "id": "US4.1",
+   "status": "OK",
+   "target": "Configuration"
+  },
+  {
+   "id": "US4.2",
+   "status": "OK",
+   "target": "SimpleSlideLayout"
+  },
+  {
+   "id": "US5.1",
+   "status": "OK",
+   "target": "PassageLayout"
+  },
+  {
+   "id": "US5.2",
+   "status": "OK",
+   "target": "SlideEditors"
+  },
+  {
+   "id": "US5.3",
+   "status": "OK",
+   "target": "PassageLayout"
+  },
+  {
+   "id": "US5.4",
+   "status": "OK",
+   "target": "PassageLayout"
+  },
+  {
+   "id": "US5.5",
+   "status": "OK",
+   "target": "EsvClient"
+  },
+  {
+   "id": "US5.6",
+   "status": "OK",
+   "target": "EsvClient"
+  },
+  {
+   "id": "US5.7",
+   "status": "OK",
+   "target": "PassageLayout"
+  },
+  {
+   "id": "US6.1",
+   "status": "OK",
+   "target": "HymnLayout"
+  },
+  {
+   "id": "US6.2",
+   "status": "OK",
+   "target": "HymnLayout"
+  },
+  {
+   "id": "US6.3",
+   "status": "OK",
+   "target": "HymnLayout"
+  },
+  {
+   "id": "US7.1",
+   "status": "OK",
+   "target": "SlideEditors"
+  },
+  {
+   "id": "US7.2",
+   "status": "OK",
+   "target": "HymnStore"
+  },
+  {
+   "id": "US7.3",
+   "status": "OK",
+   "target": "LocalHymnEdit"
+  },
+  {
+   "id": "US7.4",
+   "status": "OK",
+   "target": "HymnStore"
+  },
+  {
+   "id": "US7.5",
+   "status": "OK",
+   "target": "HymnStore"
+  },
+  {
+   "id": "US7.6",
+   "status": "OK",
+   "target": "LibrarySync"
+  },
+  {
+   "id": "US8.1",
+   "status": "OK",
+   "target": "HymnMigrator"
+  },
+  {
+   "id": "US9.1",
+   "status": "OK",
+   "target": "SlideEditors"
+  },
+  {
+   "id": "US9.2",
+   "status": "OK",
+   "target": "TextBlockLayout"
+  },
+  {
+   "id": "US9.3",
+   "status": "OK",
+   "target": "TextBlockLayout"
+  },
+  {
+   "id": "US9.4",
+   "status": "OK",
+   "target": "TextBlockLayout"
+  },
+  {
+   "id": "US9.5",
+   "status": "OK",
+   "target": "TextBlockLayout"
+  },
+  {
+   "id": "US10.1",
+   "status": "OK",
+   "target": "SimpleSlideLayout"
+  },
+  {
+   "id": "US10.2",
+   "status": "OK",
+   "target": "ServiceDates"
+  },
+  {
+   "id": "US11.1",
+   "status": "OK",
+   "target": "SimpleSlideLayout"
+  },
+  {
+   "id": "US12.1",
+   "status": "OK",
+   "target": "MakeSlidesRun"
+  },
+  {
+   "id": "US12.2",
+   "status": "OK",
+   "target": "RunRecord"
+  },
+  {
+   "id": "US12.3",
+   "status": "OK",
+   "target": "SlidesCleaner"
+  },
+  {
+   "id": "US12.4",
+   "status": "OK",
+   "target": "PendingTrash"
+  },
+  {
+   "id": "US12.5",
+   "status": "OK",
+   "target": "TemplateReader"
+  },
+  {
+   "id": "US12.6",
+   "status": "OK",
+   "target": "Paginator"
+  },
+  {
+   "id": "US12.7",
+   "status": "OK",
+   "target": "MakeSlidesRun"
+  },
+  {
+   "id": "US13.1",
+   "status": "OK",
+   "target": "TemplateReader"
+  },
+  {
+   "id": "US13.2",
+   "status": "OK",
+   "target": "Configuration"
+  },
+  {
+   "id": "US13.3",
+   "status": "OK",
+   "target": "TemplateChecker"
+  },
+  {
+   "id": "US14.1",
+   "status": "OK",
+   "target": "UserSettings"
+  },
+  {
+   "id": "US14.3",
+   "status": "OK",
+   "target": "ReloadAllHymns, LibrarySync"
+  },
+  {
+   "id": "US14.2",
+   "status": "OK",
+   "target": "ScreenViews"
+  },
+  {
+   "id": "US15.1",
+   "status": "OK",
+   "target": "ErrorModel"
+  },
+  {
+   "id": "US15.2",
+   "status": "OK",
+   "target": "Redactor"
+  },
+  {
+   "id": "US15.3",
+   "status": "OK",
+   "target": "ErrorModel"
+  },
+  {
+   "id": "US15.4",
+   "status": "OK",
+   "target": "ScreenViews"
+  },
+  {
+   "id": "US16.1",
+   "status": "GAP"
+  },
+  {
+   "id": "US16.2",
+   "status": "OK",
+   "target": "ReleaseChecker"
+  },
+  {
+   "id": "US17.1",
+   "status": "GAP"
+  },
+  {
+   "id": "US17.2",
+   "status": "GAP"
+  },
+  {
+   "id": "US18.1",
+   "status": "OK",
+   "target": "MakeSlidesRun"
+  },
+  {
+   "id": "US18.2",
+   "status": "GAP"
+  },
+  {
+   "id": "US18.3",
+   "status": "GAP"
+  },
+  {
+   "id": "US18.4",
+   "status": "OK",
+   "target": "ScreenViews"
+  },
+  {
+   "id": "US18.5",
+   "status": "OK",
+   "target": "SecretStore"
+  },
+  {
+   "id": "US18.6",
+   "status": "OK",
+   "target": "ServiceStore"
+  },
+  {
+   "id": "US18.7",
+   "status": "GAP"
+  },
+  {
+   "id": "US18.8",
+   "status": "GAP"
+  },
+  {
+   "id": "US18.9",
+   "status": "GAP"
+  },
+  {
+   "id": "US18.10",
+   "status": "OK",
+   "target": "ScreenViews"
+  }
+ ],
+ "note": "US3.5 maps to SingleInstanceGuard (one copy) and MakeSlidesRun (one run at a time). Eight stories (US16.1, US17.1, US17.2, US18.2, US18.3, US18.7, US18.8, US18.9) are build, release or process work with no code component; see components.md Assumptions."
+}

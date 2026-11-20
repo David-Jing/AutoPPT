@@ -11,7 +11,7 @@ B. Always use a topic branch and merge it into `main` by squash, even for small 
 C. Not yet defined
 X. Other (please specify)
 
-[Answer]:
+[Answer]: A
 
 ## Q2. [Developer] Should the first thing built be a thin end-to-end slice?
 
@@ -22,7 +22,7 @@ B. No, build the features one at a time without a thin slice first
 C. Not yet defined
 X. Other (please specify)
 
-[Answer]:
+[Answer]: A
 
 ## Q3. [Developer] When do you write tests: before the code, after it, or a mix?
 
@@ -34,7 +34,7 @@ C. Test-first (TDD) everywhere
 D. Not yet defined
 X. Other (please specify)
 
-[Answer]:
+[Answer]: B
 
 ## Q4. [Developer] Do you want the 80% line-coverage floor, and a manual check before each release?
 
@@ -47,7 +47,7 @@ D. Neither
 E. Not yet defined
 X. Other (please specify)
 
-[Answer]:
+[Answer]: X. Other (please specify): an 80% line-coverage floor on the `core` module only (layout, pagination and other pure logic), enforced in the automated build; no coverage floor on the Swing UI or the Google, ESV and shared-library adapters. Plus a manual check of one real PPT built in Google Drive before each release.
 
 ## Q5. [Developer] How should releases be built and rolled back?
 
@@ -58,7 +58,7 @@ B. As drafted, but publish each release as a draft first and publish it by hand 
 C. Not yet defined
 X. Other (please specify)
 
-[Answer]:
+[Answer]: B — publish each release as a draft first, check the zips, then publish it by hand (GitHub's latest-release endpoint ignores drafts, so users only see the update prompt after the check).
 
 ## Q6. [Developer] Which formatter and linter should the automated build enforce?
 
@@ -70,7 +70,7 @@ C. No formatter or linter in the build
 D. Not yet defined
 X. Other (please specify)
 
-[Answer]:
+[Answer]: B — Spotless only, using google-java-format, enforced in the build.
 
 ## Q7. [Developer] Are there any hard rules that must always, or must never, apply?
 
@@ -79,4 +79,13 @@ Context: a hard rule is recorded as a permanent project rule, shown as ALWAYS or
 A. None
 X. Other (please specify, for example "ALWAYS ..." or "NEVER ...")
 
-[Answer]:
+[Answer]: X. Other (please specify): NEVER write keys, tokens or other setup-file secrets to logs or support details. NEVER show technical terms (GitHub, repo, commit, API, token) in the UI. ALWAYS call the generated output "PPT" or "slides", never "deck".
+
+## Consolidated Summary Confirmation
+
+Does this all look correct before I generate the artifact?
+
+- Looks correct
+- Request changes
+
+[Answer]: Looks correct

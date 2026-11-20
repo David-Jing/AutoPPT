@@ -1,6 +1,6 @@
 # Wireframes: AutoPPT Rewrite
 
-Inputs: `intent-statement.md`, `scope-document.md`, `intent-backlog.md`, `rough-mockups-questions.md` (Q1 to Q9), and `high-level-design.md` (the F1 main-window sketch and the screen descriptions in F1 to F12). Wording follows the plain-language vocabulary (design document section 5), and this document says "PPT" or "slides" (Q1).
+Inputs: `intent-statement.md`, `scope-document.md`, `intent-backlog.md`, `rough-mockups-questions.md` (Q1 to Q9, and Q6 of `user-stories-questions.md` for the template v3 changes), and `high-level-design.md` (the F1 main-window sketch and the screen descriptions in F1 to F12). Wording follows the plain-language vocabulary (design document section 5), and this document says "PPT" or "slides" (Q1).
 
 These are low-fidelity sketches. Layout, colour and spacing are decided later; the sketches fix which controls exist, where they sit and what each state says.
 
@@ -168,6 +168,7 @@ There is no separate offline state for the wizard. The wizard opens only after t
 │ Hi Grace   Sunday 22 Nov 2026 ▾   Order: Normal ▾ [New service] [Make slides ▸]│
 ├──────────────────────────────┬───────────────────────────────────────────────┤
 │ ≡ Opening Passage  John 8:12 │ Hymn                                          │
+│ ≡ Offering         Ps 96:8-9 │                                               │
 │ ≡ Sunday Service Header      │ ┌───────────────────────────────────────────┐ │
 │ ≡ Monthly Scripture          │ │ Love Incarnate                         ▾  │ │
 │ ≡ Chinese Monthly Scripture ✎│ └───────────────────────────────────────────┘ │
@@ -184,6 +185,7 @@ There is no separate offline state for the wizard. The wizard opens only after t
 └──────────────────────────────────────────────────────────────────────────────┘
 ```
 
+- The Normal order includes the Offering row (user-stories-questions.md Q6).
 - This is the design document's F1 sketch, with the bottom bar and "Delete for everyone" added for the first version. The top bar greets the user with "Hi [name]", using the name entered at first start (S1b), and the name can be changed in Settings (S6) (Q6; design document F1). The main window opens only after the start-up screen has confirmed an internet connection (S0a). The `Order` dropdown offers Normal and Holy Communion. The date defaults to the coming Sunday (today if today is a Sunday).
 - Reorder by dragging the ≡ handle, or with Move up and Move down (Alt+Up and Alt+Down). Each row shows a short summary; a row that cannot be made shows ⚠ and a plain reason.
 - Accessibility: h1 is the window title with the service date; the slide list is the navigation region and the settings panel is the main region; keyboard entry point is the slide list, with Tab moving to the settings panel and the Make slides button.
@@ -240,17 +242,33 @@ There is no separate offline state for the wizard. The wizard opens only after t
 
 Each editor fills the right-hand panel when its row is selected (design document F1 settings table).
 
-### S3a. Opening Passage and Bible Passage
+### S3a. Opening Passage, Offering and Bible Passage
 
 ```
 │ Opening Passage                                            │
-│ Title (optional)  [PLEASE KEEP SILENT AND PREPARE YOUR …]  │
 │ Passage           [John 8:12                           ?]  │
-│ ☐ Show the reference after the passage   (Bible Passage only)
+│ The reference is added after the passage.                  │
 │ ⚠ We couldn't find 'Jhon 3:16'                             │
 ```
 
-- The `?` tooltip lists what works ("Genesis 1:1-10", "John 3:16, 18", "Psalm 23; Romans 8:28") and what does not (Chinese book names, other translations). Separate passages are split with a semicolon only.
+```
+│ Offering                                                   │
+│ Passage           [Psalm 96:8-9                        ?]  │
+│ The text goes under the OFFERING heading, with the         │
+│ reference after it.                                        │
+```
+
+```
+│ Bible Passage                                              │
+│ Title (optional)  [                                    ]   │
+│ Passage           [Romans 8:13-14                      ?]  │
+│ ☐ Show the reference after the passage                     │
+```
+
+- The Opening Passage has no title field, and the Offering has no title field either, because the template's heading is fixed. The reference for the Opening Passage and Offering is always shown, as the last paragraph of the same text box and placed toward the right, on the last slide only (user-stories-questions.md Q6; design document F1, V6). A Bible Passage keeps its optional title and its toggle.
+- The Offering is a passage slide, not a static slide. Its passage field, semicolon rule and `?` help button are the Bible Passage's (user-stories-questions.md Q6).
+
+- The `?` help button (a pop-up, not a hover tooltip, so the keyboard can reach it; refined-mockups-questions.md Q6) lists what works ("Genesis 1:1-10", "John 3:16, 18", "Psalm 23; Romans 8:28") and what does not (Chinese book names, other translations). Separate passages are split with a semicolon only.
 
 ### S3b. Chinese Monthly Scripture (title only)
 
@@ -334,7 +352,8 @@ Supplications uses the same editor as Announcements (Q5): the same ordered list 
 │ Audio   [      ]  Streaming [   ]  Announcer [      ]      │
 │ (one name field per role in the template; empty prints N/A)│
 │                                                            │
-│ Static slides (Lord's Prayer, Creed, Holy Communion, …):   │
+│ Static slides (Lord's Prayer, Creed, Holy Communion,       │
+│ Doxology, Benediction; not the Offering):                  │
 │ "This slide is copied as-is."                              │
 ```
 
@@ -384,6 +403,7 @@ When the run ends (all 6 rows finished), the count reads "6 of 6 rows finished",
 │ Your name        [Grace          ]                          │
 │ Theme            ( ) Light  ( ) Dark                        │
 │ [ Replace setup file ]   [ Sign out of Google ]             │
+│ [ Reload all hymns ]                                        │
 │                                                   [ Close ] │
 │ ─────────────────────────────────────────────────────────── │
 │ AutoPPT 1.0.0                                               │
@@ -393,6 +413,7 @@ When the run ends (all 6 rows finished), the count reads "6 of 6 rows finished",
 - About: the app version, for example "AutoPPT 1.0.0", shows at the bottom of Settings. The same version appears on the start-up screen (S0a) and in "Copy details for support" (S5) (Q7; design document F10).
 
 - The name in this screen is the one entered at first start (S1b) and is shown in the main window's top bar as "Hi [name]"; changing it here updates the greeting (Q6).
+- Reload all hymns (added in refined mockups, FR14.5) asks for confirmation first, with Cancel as the default button and Escape cancelling, then downloads every hymn into a temporary copy and, only when every hymn has arrived, replaces the local copy and discards unsaved hymn edits. If it fails nothing changes and "Couldn't reload the hymns. Nothing was changed." shows. It never changes the shared library (design document F3, F10).
 - There is no language selector in the first version (design document F10; scope-document.md lists it as out of scope).
 - Accessibility: h1 "Settings"; one main region; keyboard entry point is the first checkbox.
 

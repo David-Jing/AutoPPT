@@ -7,8 +7,8 @@
         "kind": "managed",
         "path": "documents/high-level-design.md"
       },
-      "sha256": "a43b0f3fad62cc66706dc916bb03df5aa91ba9a0babb717fe29a5b378b81a2ba",
-      "bytes": 55560,
+      "sha256": "4c8352fcf40e3cd3d24727d3d11e0c757b8b6a2cb63306ecb1695ba774df65ca",
+      "bytes": 57648,
       "indexed_at": "2026-11-17T02:26:00.972Z",
       "extraction": {
         "state": "extracted",
@@ -16,15 +16,15 @@
           "name": "builtin-text",
           "version": "1"
         },
-        "chars": 53474,
+        "chars": 55556,
         "truncated": false,
-        "source_revision": "a43b0f3fad62cc66706dc916bb03df5aa91ba9a0babb717fe29a5b378b81a2ba"
+        "source_revision": "4c8352fcf40e3cd3d24727d3d11e0c757b8b6a2cb63306ecb1695ba774df65ca"
       },
       "summary": {
         "state": "absent"
       },
       "content": "documentkb/01a1e753-568e-78ac-a57a-07984d7d0fe2/content.md",
-      "content_sha256": "a43b0f3fad62cc66706dc916bb03df5aa91ba9a0babb717fe29a5b378b81a2ba"
+      "content_sha256": "4c8352fcf40e3cd3d24727d3d11e0c757b8b6a2cb63306ecb1695ba774df65ca"
     }
   ]
 }

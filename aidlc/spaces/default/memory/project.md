@@ -58,11 +58,17 @@
 <!-- Format: - NEVER [behavior] (affirmed [date]) -->
 <!-- Example: - NEVER throw exceptions across service layer boundaries (affirmed 2026-05-17) -->
 
+- NEVER write keys, tokens or other setup-file secrets to logs or support details. (affirmed 2026-11-18)
+
+- NEVER show technical terms (GitHub, repo, commit, API, token) in the UI. (affirmed 2026-11-18)
+
 ## Mandated
 
 <!-- Populated by practices-discovery affirmation gate. -->
 <!-- Format: - ALWAYS [behavior] (affirmed [date]) -->
 <!-- Example: - ALWAYS use Result<T,E> for fallible operations in service layer (affirmed 2026-05-17) -->
+
+- ALWAYS call the generated output "PPT" or "slides", never "deck". (affirmed 2026-11-18)
 
 ## Corrections
 
